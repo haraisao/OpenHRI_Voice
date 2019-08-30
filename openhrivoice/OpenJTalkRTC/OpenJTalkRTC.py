@@ -39,13 +39,9 @@ from openhrivoice import utils
 from openhrivoice.config import config
 from openhrivoice.OpenJTalkRTC.parseopenjtalk import parseopenjtalk
 from openhrivoice.VoiceSynthComponentBase import *
-try:
-    import gettext
-    _ = gettext.translation(domain='openhrivoice', localedir=os.path.dirname(__file__)+'/../share/locale').ugettext
-except:
-    _ = lambda s: s
 
-__doc__ = _('Japanese speech synthesis component.')
+
+__doc__ = 'Japanese speech synthesis component.'
 
 '''
 NAIST Japanese Dictionary
@@ -206,7 +202,7 @@ class OpenJTalkWrap(VoiceSynthBase):
         # text file(input)
         cmdarg.append(textfile)
 
-        print ' '.join(cmdarg)
+        print (' '.join(cmdarg))
         # run OpenJTalk
         #    String ---> Wav data
         p = subprocess.Popen(cmdarg)
@@ -259,7 +255,7 @@ class OpenJTalkWrap(VoiceSynthBase):
 #
 OpenJTalkRTC_spec = ["implementation_id", "OpenJTalkRTC",
                      "type_name",         "OpenJTalkRTC",
-                     "description",       __doc__.encode('UTF-8'),
+                     "description",       __doc__,
                      "version",           __version__,
                      "vendor",            "AIST",
                      "category",          "communication",
@@ -270,15 +266,15 @@ OpenJTalkRTC_spec = ["implementation_id", "OpenJTalkRTC",
                      "conf.default.format", "int16",
                      "conf.__widget__.format", "radio",
                      "conf.__constraints__.format", "(int16)",
-                     "conf.__description__.format", _("Format of output audio (fixed to 16bit).").encode('UTF-8'),
+                     "conf.__description__.format", "Format of output audio (fixed to 16bit).",
                      "conf.default.rate", "16000",
                      "conf.__widget__.rate", "spin",
                      "conf.__constraints__.rate", "16000",
-                     "conf.__description__.rate", _("Sampling frequency of output audio (fixed to 16kHz).").encode('UTF-8'),
+                     "conf.__description__.rate", "Sampling frequency of output audio (fixed to 16kHz).",
                      "conf.default.character", "male",
                      "conf.__widget__.character", "radio",
                      "conf.__constraints__.character", "(male, female)",
-                     "conf.__description__.character", _("Character of the voice.").encode('UTF-8'),
+                     "conf.__description__.character", "Character of the voice.",
                      "conf.default.cachesize", "1",
                      "conf.__widget__.cachesize", "text",
                      "conf.__type__.cachesize", "int",
@@ -389,16 +385,16 @@ class OpenJTalkRTCManager:
     # Constructor
     #
     def __init__(self):
-        encoding = locale.getpreferredencoding()
-        sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-        sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
+        #encoding = locale.getpreferredencoding()
+        #sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
+        #sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
 
         parser = utils.MyParser(version=__version__, description=__doc__)
         utils.addmanageropts(parser)
         try:
             opts, args = parser.parse_args()
-        except optparse.OptionError, e:
-            print >>sys.stderr, 'OptionError:', e
+        except optparse.OptionError as e:
+            print ( 'OptionError:', e, file=sys.stderr)
             sys.exit(1)
         self._comp = None
         self._manager = OpenRTM_aist.Manager.init(utils.genmanagerargs(opts))

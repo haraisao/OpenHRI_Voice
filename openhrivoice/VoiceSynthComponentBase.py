@@ -35,12 +35,6 @@ import OpenRTM_aist
 import RTC
 from openhrivoice import utils
 
-try:
-    import gettext
-    _ = gettext.translation(domain='openhrivoice', localedir=os.path.dirname(__file__)+'/../share/locale').ugettext
-except:
-    _ = lambda s: s
-
 
 #
 #   Voice Synthesizer Base Class
@@ -165,7 +159,7 @@ class VoiceSynthComponentBase(OpenRTM_aist.DataFlowComponentBase):
         # create inport
         self._indata = RTC.TimedString(RTC.Time(0,0), "")
         self._inport = OpenRTM_aist.InPort("text", self._indata)
-        self._inport.appendProperty('description', _('Text to be synthesized.').encode('UTF-8'))
+        self._inport.appendProperty('description', 'Text to be synthesized.')
         self._inport.addConnectorDataListener(OpenRTM_aist.ConnectorDataListenerType.ON_BUFFER_WRITE,
                                               DataListener("ON_BUFFER_WRITE", self))
         self.registerInPort(self._inport._name, self._inport)
@@ -173,19 +167,19 @@ class VoiceSynthComponentBase(OpenRTM_aist.DataFlowComponentBase):
         # create outport for wave data
         self._outdata = RTC.TimedOctetSeq(RTC.Time(0,0), None)
         self._outport = OpenRTM_aist.OutPort("result", self._outdata)
-        self._outport.appendProperty('description', _('Synthesized audio data.').encode('UTF-8'))
+        self._outport.appendProperty('description', 'Synthesized audio data.')
         self.registerOutPort(self._outport._name, self._outport)
 
         # create outport for status
         self._statusdata = RTC.TimedString(RTC.Time(0,0), "")
         self._statusport = OpenRTM_aist.OutPort("status", self._statusdata)
-        self._statusport.appendProperty('description', _('Status of audio output (one of "started", "finished").').encode('UTF-8'))
+        self._statusport.appendProperty('description', 'Status of audio output (one of "started", "finished").')
         self.registerOutPort(self._statusport._name, self._statusport)
 
         # create outport for duration data
         self._durdata = RTC.TimedString(RTC.Time(0,0), "")
         self._durport = OpenRTM_aist.OutPort("duration", self._durdata)
-        self._durport.appendProperty('description', _('Time aliment information of each phonemes (to be used to lip-sync).').encode('UTF-8'))
+        self._durport.appendProperty('description', 'Time aliment information of each phonemes (to be used to lip-sync).')
         self.registerOutPort(self._durport._name, self._durport)
         self._is_active = False
         return RTC.RTC_OK

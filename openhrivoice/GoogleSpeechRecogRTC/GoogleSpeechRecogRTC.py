@@ -34,15 +34,7 @@ from openhrivoice.config import config
 
 from openhrivoice.CloudSpeechRecogBase import CloudSpeechRecogBase
 
-try:
-    import gettext
-    _ = gettext.translation(domain='openhrivoice', localedir=os.path.dirname(__file__)+'/../share/locale').ugettext
-except:
-    _ = lambda s: s
-
-
-__doc__ = _('Google Speech Recognition component.')
-
+__doc__ = 'Google Speech Recognition component.'
 
 #
 #  
@@ -96,8 +88,8 @@ class GoogleSpeechRecogWrap(CloudSpeechRecogBase):
             response = result.read()
             return response.decode('utf-8').split()
         except:
-            print url
-            print traceback.format_exc()
+            print (url)
+            print (traceback.format_exc())
             return ["Error"]
 
 
@@ -106,7 +98,7 @@ class GoogleSpeechRecogWrap(CloudSpeechRecogBase):
 #
 GoogleSpeechRecogRTC_spec = ["implementation_id", "GoogleSpeechRecogRTC",
                   "type_name",         "GoogleSpeechRecogRTC",
-                  "description",       __doc__.encode('UTF-8'),
+                  "description",       __doc__,
                   "version",           __version__,
                   "vendor",            "AIST",
                   "category",          "communication",
@@ -187,7 +179,7 @@ class GoogleSpeechRecogRTC(OpenRTM_aist.DataFlowComponentBase):
         # create inport for audio stream
         self._indata = RTC.TimedOctetSeq(RTC.Time(0,0), None)
         self._inport = OpenRTM_aist.InPort("data", self._indata)
-        self._inport.appendProperty('description', _('Audio data (in packets) to be recognized.').encode('UTF-8'))
+        self._inport.appendProperty('description', 'Audio data (in packets) to be recognized.')
         self._inport.addConnectorDataListener(OpenRTM_aist.ConnectorDataListenerType.ON_BUFFER_WRITE,
                                               DataListener("data", self, RTC.TimedOctetSeq))
         self.registerInPort(self._inport._name, self._inport)
@@ -196,7 +188,7 @@ class GoogleSpeechRecogRTC(OpenRTM_aist.DataFlowComponentBase):
         # create outport for result
         self._outdata = RTC.TimedString(RTC.Time(0,0), "")
         self._outport = OpenRTM_aist.OutPort("result", self._outdata)
-        self._outport.appendProperty('description', _('Recognition result in XML format.').encode('UTF-8'))
+        self._outport.appendProperty('description', 'Recognition result in XML format.')
         self.registerOutPort(self._outport._name, self._outport)
 
         self._logger.RTC_INFO("This component depends on following softwares and datas:")
@@ -294,7 +286,7 @@ class GoogleSpeechRecogRTC(OpenRTM_aist.DataFlowComponentBase):
                 listentext.setAttribute("state","Success")
 
             except:
-                print traceback.format_exc()
+                print (traceback.format_exc())
                 listentext.setAttribute("state","ParseError")
 
         res_data = doc.toxml(encoding="utf-8")
@@ -309,17 +301,17 @@ class GoogleSpeechRecogManager:
     #  Constructor
     #
     def __init__(self):
-        encoding = locale.getpreferredencoding()
-        sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-        sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
+        #encoding = locale.getpreferredencoding()
+        #sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
+        #sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
 
         parser = utils.MyParser(version=__version__, description=__doc__)
         utils.addmanageropts(parser)
 
         try:
             opts, args = parser.parse_args()
-        except optparse.OptionError, e:
-            print >>sys.stderr, 'OptionError:', e
+        except optparse.OptionError as e:
+            print( 'OptionError:', e, file=sys.stderr)
             sys.exit(1)
 
         self._comp = None

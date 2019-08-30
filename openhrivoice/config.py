@@ -135,7 +135,8 @@ class config():
     #
     def openjtalk(self, basedir):
         if self._platform == "Windows":
-            self._openjtalk_dir = os.path.join(basedir, "open_jtalk-1.10")
+            #self._openjtalk_dir = os.path.join(basedir, "open_jtalk-1.10")
+            self._openjtalk_dir = os.path.join(basedir, "OpenJTalk")
             self._openjtalk_bin = os.path.join(self._openjtalk_dir, "bin", "open_jtalk.exe")
             self._openjtalk_phonemodel_male_ja =  os.path.join(self._openjtalk_dir, "share", "hts_voice_nitech_jp_atr503_m001-1.05", "nitech_jp_atr503_m001.htsvoice")
             self._openjtalk_phonemodel_female_ja =  os.path.join(self._openjtalk_dir,"share", "mei", "mei_normal.htsvoice")

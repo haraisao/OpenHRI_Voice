@@ -136,7 +136,7 @@ class CloudSpeechRecogBase(threading.Thread):
     #  Terminate (Call on Finished)
     #
     def terminate(self):
-        print 'CloudSpeech: terminate'
+        print ('CloudSpeech: terminate')
         self._running = False
         return 0
 
@@ -160,5 +160,5 @@ class CloudSpeechRecogBase(threading.Thread):
                     #print "----"
                     pass
 
-        print 'CloudSpeech: exit from event loop'
+        print ('CloudSpeech: exit from event loop')
 

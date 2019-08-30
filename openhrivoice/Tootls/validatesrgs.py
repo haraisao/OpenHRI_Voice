@@ -22,18 +22,13 @@ from openhrivoice.__init__ import __version__
 from lxml import etree
 from openhrivoice.parsesrgs import *
 from openhrivoice import utils
-try:
-    import gettext
-    _ = gettext.translation(domain='openhrivoice', localedir=os.path.dirname(__file__)+'/../share/locale').ugettext
-except:
-    _ = lambda s: s
 
-__doc__ = _('Validate format of the SRGS grammar file.')
+__doc__ = 'Validate format of the SRGS grammar file.'
 
 __examples__ = '''
 Examples:
 
-- '''+_('Validate format of the SRGS grammar.')+'''
+- '''+ 'Validate format of the SRGS grammar.' +'''
 
   ::
   
@@ -43,9 +38,9 @@ Examples:
 def main():
     global opts
     
-    encoding = locale.getpreferredencoding()
-    sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-    sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
+    #encoding = locale.getpreferredencoding()
+    #sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
+    #sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
 
     if hasattr(sys, "frozen"):
         basedir = os.path.dirname(unicode(sys.executable, sys.getfilesystemencoding()))
@@ -56,14 +51,14 @@ def main():
                             description=__doc__, epilog=__examples__)
     parser.add_option('-v', '--verbose', dest='verbose', action='store_true',
                       default=False,
-                      help=_('output verbose information'))
+                      help='output verbose information')
     parser.add_option('-g', '--gui', dest='guimode', action="store_true",
                       default=False,
-                      help=_('show file open dialog in GUI'))
+                      help='show file open dialog in GUI')
     try:
         opts, args = parser.parse_args()
-    except optparse.OptionError, e:
-        print >>sys.stderr, 'OptionError:', e
+    except optparse.OptionError as e:
+        print ('OptionError:', e, file=sys.stderr)
         sys.exit(1)
 
     if opts.guimode == True:
@@ -76,24 +71,24 @@ def main():
     parser = etree.XMLParser(dtd_validation = True)
     xmlschema_doc = etree.parse(os.path.join(basedir, 'grammar.xsd'))
     xmlschema = etree.XMLSchema(xmlschema_doc)
-    print "Validating SRGS file %s..." % (args[0],)
+    print ("Validating SRGS file %s..." % (args[0],))
     try:
         doc2 = etree.parse(args[0])
         doc2.xinclude()
-    except etree.XMLSyntaxError, e:
-        print "[error] invalid xml syntax"
-        print e
+    except etree.XMLSyntaxError as e:
+        print ("[error] invalid xml syntax")
+        print (e)
         myexit()
-    except IOError, e:
-        print "[error] IO error: unable to open file ", args[0]
-        print e
+    except IOError as e:
+        print ("[error] IO error: unable to open file ", args[0])
+        print (e)
         myexit()
     try:
         xmlschema.assert_(doc2)
-        print "SRGS file is valid."
-    except AssertionError, b:
-        print "[error] Invalid SRGS file."
-        print b
+        print ("SRGS file is valid.")
+    except AssertionError as b:
+        print ("[error] Invalid SRGS file.")
+        print (b)
         myexit()
 
     xmlschema2_doc = etree.parse(os.path.join(basedir, 'pls.xsd'))
@@ -101,17 +96,17 @@ def main():
     srgs = SRGS(args[0])
     try:
         for l in srgs._lex:
-            print "Validating PLS file %s..." % (l,)
+            print ("Validating PLS file %s..." % (l,))
             doc4 = etree.parse(l)
             try:
                 xmlschema2.assert_(doc4)
-                print "PLS file is valid."
-            except AssertionError, b:
-                print "[error] Invalid PLS file."
-                print b
+                print ("PLS file is valid.")
+            except AssertionError as b:
+                print ("[error] Invalid PLS file.")
+                print (b)
                 myexit()
     except IOError:
-        print "[error] Cannot open PLS file: %s" % (",".join(srgs._lex),)
+        print ("[error] Cannot open PLS file: %s" % (",".join(srgs._lex),))
         myexit()
     myexit()
 

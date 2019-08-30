@@ -31,13 +31,13 @@ from openhrivoice.__init__ import __version__
 from openhrivoice import utils
 from openhrivoice.config import config
 from openhrivoice.VoiceSynthComponentBase import *
-try:
-    import gettext
-    _ = gettext.translation(domain='openhrivoice', localedir=os.path.dirname(__file__)+'/../share/locale').ugettext
-except:
-    _ = lambda s: s
+#try:
+#    import gettext
+#    _ = gettext.translation(domain='openhrivoice', localedir=os.path.dirname(__file__)+'/../share/locale').ugettext
+#except:
+#    _ = lambda s: s
 
-__doc__ = _('English speech synthesis component.')
+__doc__ = English speech synthesis component.'
 
 #
 #  Festival Wrapper class
@@ -99,7 +99,7 @@ class FestivalWrap(VoiceSynthBase):
 #
 FestivalRTC_spec = ["implementation_id", "FestivalRTC",
                     "type_name",         "FestivalRTC",
-                    "description",       __doc__.encode('UTF-8'),
+                    "description",       __doc__,
                     "version",           __version__,
                     "vendor",            "AIST",
                     "category",          "communication",
@@ -110,15 +110,15 @@ FestivalRTC_spec = ["implementation_id", "FestivalRTC",
                     "conf.default.format", "int16",
                     "conf.__widget__.format", "radio",
                     "conf.__constraints__.format", "int16",
-                    "conf.__description__.format", _("Format of output audio (fixed to 16bit).").encode('UTF-8'),
+                    "conf.__description__.format", "Format of output audio (fixed to 16bit).",
                     "conf.default.rate", "16000",
                     "conf.__widget__.rate", "spin",
                     "conf.__constraints__.rate", "x == 16000",
-                    "conf.__description__.rate", _("Sampling frequency of output audio (fixed to 16kHz).").encode('UTF-8'),
+                    "conf.__description__.rate", "Sampling frequency of output audio (fixed to 16kHz).",
                     "conf.default.character", "male",
                     "conf.__widget__.character", "radio",
                     "conf.__constraints__.character", "(male)",
-                    "conf.__description__.character", _("Character of the voice (fixed to male).").encode('UTF-8'),
+                    "conf.__description__.character", "Character of the voice (fixed to male).",
                     ""]
 
 #
@@ -155,15 +155,15 @@ class FestivalRTCManager:
     #
     def __init__(self):
         encoding = locale.getpreferredencoding()
-        sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-        sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
+        #sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
+        #sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
 
         parser = utils.MyParser(version=__version__, description=__doc__)
         utils.addmanageropts(parser)
         try:
             opts, args = parser.parse_args()
-        except optparse.OptionError, e:
-            print >>sys.stderr, 'OptionError:', e
+        except optparse.OptionError as e:
+            print('OptionError:', e, file=sys.stder)
             sys.exit(1)
         self._comp = None
         self._manager = OpenRTM_aist.Manager.init(utils.genmanagerargs(opts))

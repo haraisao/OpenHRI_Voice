@@ -34,11 +34,6 @@ import RTC
 from openhrivoice.__init__ import __version__
 from openhrivoice import utils
 from openhrivoice.config import config
-#try:
-#    import gettext
-#    _ = gettext.translation(domain='openhrivoice', localedir=os.path.dirname(__file__)+'/../share/locale').ugettext
-#except:
-#    _ = lambda s: s
 
 __doc__ = "Julius (English and Japanese) speech recognition component."
 

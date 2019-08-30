@@ -20,18 +20,13 @@ import optparse
 from openhrivoice.__init__ import __version__
 import locale
 from openhrivoice import utils
-try:
-    import gettext
-    _ = gettext.translation(domain='openhrivoice', localedir=os.path.dirname(__file__)+'/../share/locale').ugettext
-except:
-    _ = lambda s: s
 
-__doc__ = _('Draw graph from Julius grammar.')
+__doc__ = 'Draw graph from Julius grammar.'
 
 __examples__ = '''
 Examples:
 
-- '''+_('Draw graph of the SRGS grammar.')+'''
+- '''+'Draw graph of the SRGS grammar.'+'''
 
   ::
   
@@ -66,23 +61,23 @@ def juliustographviz(lines):
     return ret
 
 def main():
-    encoding = locale.getpreferredencoding()
-    sys.stdin = codecs.getreader(encoding)(sys.stdin, errors = "replace")
-    sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-    sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
+    #encoding = locale.getpreferredencoding()
+    #sys.stdin = codecs.getreader(encoding)(sys.stdin, errors = "replace")
+    #sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
+    #sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
 
     parser = utils.MyParser(version=__version__, usage="%prog < [julius grammar]",
                             description=__doc__, epilog=__examples__)
     parser.add_option('-v', '--verbose', dest='verbose', action='store_true',
                       default=False,
-                      help=_('output verbose information'))
+                      help='output verbose information')
     try:
         opts, args = parser.parse_args()
-    except optparse.OptionError, e:
-        print >>sys.stderr, 'OptionError:', e
+    except optparse.OptionError as e:
+        print ('OptionError:', e, file=sys.stderr)
         sys.exit(1)
 
-    print juliustographviz(sys.stdin)
+    print (juliustographviz(sys.stdin))
 
 if __name__ == '__main__':
     main()

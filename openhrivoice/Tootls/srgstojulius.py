@@ -20,18 +20,13 @@ from openhrivoice.parsesrgs import *
 from openhrivoice.__init__ import __version__
 import locale
 from openhrivoice import utils
-try:
-    import gettext
-    _ = gettext.translation(domain='openhrivoice', localedir=os.path.dirname(__file__)+'/../share/locale').ugettext
-except:
-    _ = lambda s: s
 
-__doc__ = _('Generate Julius grammar from the W3C-SRGS grammar.')
+__doc__ = 'Generate Julius grammar from the W3C-SRGS grammar.'
 
 __examples__ = '''
 Examples:
 
-- '''+_('Generate Julius grammar from the W3C-SRGS grammar.')+'''
+- '''+ 'Generate Julius grammar from the W3C-SRGS grammar.' +'''
 
   ::
   
@@ -39,22 +34,22 @@ Examples:
 '''
 
 def main():
-    encoding = locale.getpreferredencoding()
-    sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-    sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
+    #encoding = locale.getpreferredencoding()
+    #sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
+    #sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
     
     parser = utils.MyParser(version=__version__, usage="%prog [grammarfile]",
                             description=__doc__, epilog=__examples__)
     parser.add_option('-v', '--verbose', dest='verbose', action='store_true',
                       default=False,
-                      help=_('output verbose information'))
+                      help='output verbose information')
     parser.add_option('-r', '--target-rule', dest='targetrule', action="store",
                       type="string",
-                      help=_('specify target rule id'))
+                      help='specify target rule id')
     try:
         opts, args = parser.parse_args()
-    except optparse.OptionError, e:
-        print >>sys.stderr, 'OptionError:', e
+    except optparse.OptionError as e:
+        print ('OptionError:', e, file=sys.stderr)
         sys.exit(1)
 
     if len(args) == 0:
@@ -63,7 +58,7 @@ def main():
 
     srgs = SRGS(args[0])
 
-    print srgs.toJulius(opts.targetrule)
+    print (srgs.toJulius(opts.targetrule))
 
 if __name__ == '__main__':
     main()

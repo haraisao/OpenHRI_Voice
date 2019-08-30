@@ -21,18 +21,13 @@ from openhrivoice.__init__ import __version__
 from lxml import etree
 import locale
 from openhrivoice import utils
-try:
-    import gettext
-    _ = gettext.translation(domain='openhrivoice', localedir=os.path.dirname(__file__)+'/../share/locale').ugettext
-except:
-    _ = lambda s: s
 
-__doc__ = _('Bundle multiple xincuded XML files to one file.')
+__doc__ = 'Bundle multiple xincuded XML files to one file.'
 
 def main():
-    encoding = locale.getpreferredencoding()
-    sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-    sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
+    #encoding = locale.getpreferredencoding()
+    #sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
+    #sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
 
     parser = utils.MyParser(version=__version__, usage="%prog [grammarfile]",
                             description=__doc__)
@@ -41,8 +36,8 @@ def main():
                       help=_('output verbose information'))
     try:
         opts, args = parser.parse_args()
-    except optparse.OptionError, e:
-        print >>sys.stderr, 'OptionError:', e
+    except optparse.OptionError as e:
+        print ('OptionError:', e, file=sys.stderr)
         return 1
         
     if len(args) == 0:
@@ -51,7 +46,7 @@ def main():
 
     doc = etree.parse(args[0])
     doc.xinclude()
-    print etree.tounicode(doc, pretty_print=True)
+    print (etree.tounicode(doc, pretty_print=True))
     return 0
 
 if __name__ == '__main__':

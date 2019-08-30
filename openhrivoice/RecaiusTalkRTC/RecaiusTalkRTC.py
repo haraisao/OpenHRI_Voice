@@ -31,13 +31,7 @@ from openhrivoice.config import config
 from openhrivoice.VoiceSynthComponentBase import *
 from openhrivoice.RecaiusTalkRTC.recaius import RecaiusTts
 
-try:
-    import gettext
-    _ = gettext.translation(domain='openhrivoice', localedir=os.path.dirname(__file__)+'/../share/locale').ugettext
-except:
-    _ = lambda s: s
-
-__doc__ = _('German speech synthesis component using MARY.')
+__doc__ = 'German speech synthesis component using MARY.'
 
 class RecaiusTalkWrap(VoiceSynthBase):
     def __init__(self, rtc):
@@ -125,7 +119,7 @@ class RecaiusTalkRTCManager:
         try:
             opts, args = parser.parse_args()
         except optparse.OptionError, e:
-            print >>sys.stderr, 'OptionError:', e
+            print( 'OptionError:', e, file=sys.stderr)
             sys.exit(1)
         self._comp = None
         self._manager = OpenRTM_aist.Manager.init(utils.genmanagerargs(opts))
@@ -141,12 +135,12 @@ class RecaiusTalkRTCManager:
         self._comp = manager.createComponent("RecaiusTalkRTC")
 
 def main():
-    locale.setlocale(locale.LC_CTYPE, "")
-    encoding = locale.getlocale()[1]
-    if not encoding:
-        encoding = "us-ascii"
-    sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-    sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
+    #locale.setlocale(locale.LC_CTYPE, "")
+    #encoding = locale.getlocale()[1]
+    #if not encoding:
+    #    encoding = "us-ascii"
+    #sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
+    #sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
     manager = RecaiusTalkRTCManager()
     manager.start()
 
