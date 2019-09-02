@@ -24,16 +24,21 @@ import sys, os, socket, subprocess, signal, threading, platform
 import time, struct, traceback, locale, codecs, getopt, wave, tempfile
 import optparse
 from glob import glob
-#from BeautifulSoup import BeautifulSoup
 from lxml import *
 from bs4 import BeautifulSoup
 from xml.dom.minidom import Document
-from openhrivoice.JuliusRTC.parsesrgs import *
+
+from parsesrgs import *
+
 import OpenRTM_aist
 import RTC
-from openhrivoice.__init__ import __version__
-from openhrivoice import utils
-from openhrivoice.config import config
+from __init__ import __version__
+import utils
+from config import config
+
+import signal
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
 
 __doc__ = "Julius (English and Japanese) speech recognition component."
 
@@ -150,7 +155,7 @@ class JuliusWrap(threading.Thread):
         #
         # for grammar mode
         if self._mode != 'dictation' :
-            self._modulesocket.sendall("INPUTONCHANGE TERMINATE\n")
+            self._modulesocket.sendall("INPUTONCHANGE TERMINATE\n".encode('utf-8'))
 
         print ("JuliusWrap started")
 
@@ -200,8 +205,8 @@ class JuliusWrap(threading.Thread):
             else:
                 self._cmdline.extend(['-h',  self._config._julius_hmm_en])
                 self._cmdline.extend(['-hlist', self._config._julius_hlist_en])
-                self._cmdline.extend(["-dfa", os.path.join(self._config._basedir, "JuliusRTC", "dummy-en.dfa")])
-                self._cmdline.extend(["-v", os.path.join(self._config._basedir, "JuliusRTC", "dummy-en.dict")])
+                self._cmdline.extend(["-dfa", os.path.join(self._config._basedir, "dummy-en.dfa")])
+                self._cmdline.extend(["-v", os.path.join(self._config._basedir,  "dummy-en.dict")])
                 self._cmdline.extend(["-sb", "160.0"])
     
             #
@@ -361,10 +366,12 @@ class JuliusWrap(threading.Thread):
     #
     def addgrammar(self, data, name):
         if self._firstgrammar == True:
-            self._modulesocket.sendall("CHANGEGRAM %s\n" % (name,))
+            val="CHANGEGRAM %s\n" % (name,)
+            self._modulesocket.sendall(val.encode('utf-8'))
             self._firstgrammar = False
         else:
-            self._modulesocket.sendall("ADDGRAM %s\n" % (name,))
+            val="ADDGRAM %s\n" % (name,)
+            self._modulesocket.sendall(val.encode('utf-8'))
         self._modulesocket.sendall(data.encode(self._jcode, 'backslashreplace'))
         self._grammars[name] = len(self._grammars)
         self._activegrammars[name] = True
@@ -379,8 +386,8 @@ class JuliusWrap(threading.Thread):
         except KeyError:
             print ("[error] unknown grammar: %s" % (name,))
             return
-        print ("ACTIVATEGRAM %s" % (name,))
-        self._modulesocket.sendall("ACTIVATEGRAM\n%s\n" % (name,))
+        val="ACTIVATEGRAM %s" % (name,)
+        self._modulesocket.sendall(val.encode('utf-8'))
         self._activegrammars[name] = True
         time.sleep(0.1)
 

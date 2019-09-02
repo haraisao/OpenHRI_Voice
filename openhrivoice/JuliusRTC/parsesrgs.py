@@ -18,9 +18,9 @@ from lxml import etree
 
 from io import StringIO
 
-from openhrivoice.__init__ import __version__
-from openhrivoice.config import config
-from openhrivoice.JuliusRTC.lexicondb import *
+from __init__ import __version__
+from config import config
+from lexicondb import *
 
 #
 #
@@ -126,7 +126,7 @@ class SRGSItem:
             else:
                 textnode = SRGSItem()
                 textnode._type = "#text"
-                if type(node.text) is types.NoneType:
+                if type(node.text) is type(None):
                     textnode._words = []
                 else:
                     textnode._words = [w for w in re.split(u"( |[\\\"'].*[\\\"'])", node.text.strip(' \n')) if w != '' and w != u' ']
@@ -340,14 +340,14 @@ class SRGS:
         if self._lang in ('jp', 'ja'):
             dict['<s>'] = ('silB',)
             dict['</s>'] = ('silE',)
-            from openhrivoice.JuliusRTC.hiragana2phoneme import hiragana2phoneme
+            from hiragana2phoneme import hiragana2phoneme
             conv = hiragana2phoneme()
-            from openhrivoice.JuliusRTC.katakana2hiragana import katakana2hiragana
+            from katakana2hiragana import katakana2hiragana
             conv2 = katakana2hiragana()
         elif self._lang == 'de':
             dict['<s>'] = ('sil',)
             dict['</s>'] = ('sil',)
-            from openhrivoice.JuliusRTC.sampa2simon import ipa2simon
+            from sampa2simon import ipa2simon
             conv = ipa2simon()
         else:
             dict['<s>'] = ('sil',)
@@ -358,7 +358,7 @@ class SRGS:
         unknownlexicon = []
         for v in revdfa:
             if v[1] != -1:
-                if dict.has_key(v[1]) == False:
+                if (v[1] in dict) == False:
                     p = None
                     if lex is not None:
                         p = lex._dict.get(v[1])
@@ -375,6 +375,8 @@ class SRGS:
         if len(unknownlexicon) > 0:
             raise KeyError("undefined lexicon: " + ",".join(unknownlexicon))
         dict2id = {}
+
+        print("--", dict)
         for k in dict.keys():
             dict2id[k] = len(dict2id)
 
@@ -385,7 +387,9 @@ class SRGS:
                 continue
             wid = dict2id[v[1]]
             jdfa.append((v[0], wid, v[2], 0, 0))
-        jdfa.sort(lambda x, y: x[0] - y[0])
+        #print(jdfa)
+        #jdfa.sort(lambda x, y: x[0] - y[0])
+        jdfa.sort()
 
         phonedict = list()
         for k in dict.keys():
@@ -394,7 +398,8 @@ class SRGS:
                     phonedict.append((dict2id[k], k, p))
                 else:
                     phonedict.append((dict2id[k], k, conv.convert(p)))
-        phonedict.sort(lambda x, y: x[0] - y[0])
+        #phonedict.sort(lambda x, y: x[0] - y[0])
+        phonedict.sort()
 
         str = u""
         for d in jdfa:

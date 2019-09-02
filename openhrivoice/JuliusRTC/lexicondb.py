@@ -14,10 +14,12 @@ http://www.opensource.org/licenses/eclipse-1.0.txt
 '''
 
 import sqlite3
-from openhrivoice.__init__ import __version__
-from openhrivoice.config import config
-from openhrivoice.JuliusRTC.parsejuliusdict import *
-from openhrivoice.JuliusRTC.parsevoxforgedict import *
+
+from __init__ import __version__
+
+from config import config
+from parsejuliusdict import *
+from parsevoxforgedict import *
 
 #
 #  Lexicon Database class
@@ -58,7 +60,7 @@ class LexiconDB:
             #
             #  lexicon of English phrases
             dic = VoxforgeDict(self._config._julius_dict_en)
-            for t, vs in dic._dict.iteritems():
+            for (t, vs) in dic._dict.items():
                 for v in vs:
                     self.register(t.lower(), v, 'ARPAbet')
             del dic
@@ -66,7 +68,7 @@ class LexiconDB:
             #
             # lexicon of Japanese phrases
             dic = JuliusDict(self._config._julius_dict_ja)
-            for t, vs in dic._dict.iteritems():
+            for (t, vs) in dic._dict.items():
                 for v in vs:
                     self.register(t, v, 'KANA')
             del dic

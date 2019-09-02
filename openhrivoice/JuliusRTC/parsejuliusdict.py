@@ -31,12 +31,13 @@ class JuliusDict:
     def __init__(self, fname, new_version=1):
         self._fname = fname
         self._dict = {}
+        print(self._fname)
         self.parse(self._fname)
 
     #
     #  parse dict file 
     def parse(self, fname):
-        f = open(fname, 'r')
+        f = open(fname, 'r', encoding='utf-8')
         kcode='euc-jp'
         for l in f:
             matchObj = re.search(r'\[.+\]', l)
@@ -70,10 +71,10 @@ def conv_encoding(data):
         break
       except:
         pass
-    if isinstance(data, unicode):
-        return data
-    else:
-        raise LookupError
+    #if isinstance(data, str):
+    return data
+    #else:
+    #    raise LookupError
 
 if __name__ == '__main__':
     dic1 = "D:\\local\\Julius\\dictation-kit-v4.4\\model\\lang_m\\web.60k.htkdic"
