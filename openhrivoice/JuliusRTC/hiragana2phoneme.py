@@ -168,13 +168,13 @@ def main():
         for l in f:
             for w in l.decode("utf-8").strip("\n").split(" "):
                 if w == "<s>":
-                    print "<s>\t[]\tsilB"
+                    print ("<s>\t[]\tsilB")
                 elif w == "</s>":
-                    print "</s>\t[]\tsilE"
+                    print ("</s>\t[]\tsilE")
                 else:
-                    print "%s\t[%s]\t%s" % (w, w, h.convert(w))
+                    print ("%s\t[%s]\t%s" % (w, w, h.convert(w)))
     else:
-        print h.convert(u'おんそえのへんかんのてすとでーす')
+        print (h.convert(u'おんそえのへんかんのてすとでーす'))
 
 if __name__ == '__main__':
     main()

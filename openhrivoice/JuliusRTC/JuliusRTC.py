@@ -189,8 +189,8 @@ class JuliusWrap(threading.Thread):
             if self._lang in ('ja', 'jp'):
                 self._cmdline.extend(['-h',  self._config._julius_hmm_ja])
                 self._cmdline.extend(['-hlist', self._config._julius_hlist_ja])
-                self._cmdline.extend(["-dfa", os.path.join(self._config._basedir, "JuliusRTC", "dummy.dfa")])
-                self._cmdline.extend(["-v" , os.path.join(self._config._basedir, "JuliusRTC", "dummy.dict")])
+                self._cmdline.extend(["-dfa", os.path.join(self._config._basedir,  "dummy.dfa")])
+                self._cmdline.extend(["-v" , os.path.join(self._config._basedir,  "dummy.dict")])
                 self._cmdline.extend(["-sb", "80.0"])
             #
             #  Germany
@@ -232,6 +232,7 @@ class JuliusWrap(threading.Thread):
 
         self._audioport = self.getunusedport()
         self._cmdline.extend(["-input", "adinnet",  "-adport",  str(self._audioport)]) # 入力の設定（adinport使用)
+        #self._cmdline.extend(["-input", "mic"]) # 入力の設定（adinport使用)
 
         if self._jconf_file :
             self._cmdline.extend(["-C", self._jconf_file]) # overwrite parameters by jconf file.
@@ -258,7 +259,7 @@ class JuliusWrap(threading.Thread):
     def close_julius(self):
         if self._modulesocket :
             try:
-                self._modulesocket.sendall("DIE\n")
+                self._modulesocket.sendall("DIE\n".encode('utf-8'))
                 time.sleep(1)
                 self._modulesocket.shutdown(socket.RDWR)
                 self._modulesocket.close()
@@ -344,7 +345,7 @@ class JuliusWrap(threading.Thread):
             except socket.error:
                 print ('socket error')
                 break
-
+            #print("==>",data)
             self._gotinput = True
             ds = data.split(".\n")
             self._prevdata = ds[-1]
@@ -386,10 +387,12 @@ class JuliusWrap(threading.Thread):
         except KeyError:
             print ("[error] unknown grammar: %s" % (name,))
             return
-        val="ACTIVATEGRAM %s" % (name,)
+        val="ACTIVATEGRAM %s\n" % (name,)
         self._modulesocket.sendall(val.encode('utf-8'))
         self._activegrammars[name] = True
         time.sleep(0.1)
+
+
 
     #
     #  Deactivate current grammer
@@ -400,8 +403,8 @@ class JuliusWrap(threading.Thread):
         except KeyError:
             print ("[error] unknown grammar: %s" % (name,))
             return
-        print ("DEACTIVATEGRAM %s" % (name,))
-        self._modulesocket.sendall("DEACTIVATEGRAM\n%s\n" % (name,))
+        val="DEACTIVATEGRAM %s" % (name,)
+        self._modulesocket.sendall(val.encode('utf-8'))
         del self._activegrammars[name]
         time.sleep(0.1)
 
@@ -409,7 +412,7 @@ class JuliusWrap(threading.Thread):
     #  Synchronize grammer
     #
     def syncgrammar(self):
-        self._modulesocket.sendall("SYNCGRAM\n")
+        self._modulesocket.sendall("SYNCGRAM\n".encode('utf-8'))
 
     #
     #  Switch grammer
@@ -593,7 +596,6 @@ class JuliusRTC(OpenRTM_aist.DataFlowComponentBase):
                 if gram == "":
                     return RTC.RTC_ERROR
                 self._logger.RTC_INFO("register grammar: %s" % (r,))
-                print (gram)
                 self._j.addgrammar(gram, r)
             self._j.switchgrammar(self._srgs._rootrule)
 

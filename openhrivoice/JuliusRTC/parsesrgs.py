@@ -376,7 +376,7 @@ class SRGS:
             raise KeyError("undefined lexicon: " + ",".join(unknownlexicon))
         dict2id = {}
 
-        print("--", dict)
+        #print("--", dict)
         for k in dict.keys():
             dict2id[k] = len(dict2id)
 
