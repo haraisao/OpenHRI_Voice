@@ -36,6 +36,7 @@ from __init__ import __version__
 import utils
 from config import config
 
+
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -62,6 +63,34 @@ am-gmm.jconf
   -lmp  10 0  # 言語重みと挿入ペナルティ: 第1パス(2-gram)
   -lmp2 10 0  # 言語重みと挿入ペナルティ: 第2パス(3-gram)
 
+ENVR-v5.4.Gmm.Bin:
+  -htkconf wav_config
+  -h ENVR-v5.3.am
+  -hlist ENVR-v5.3.phn
+  -d ENVR-v5.3.lm
+  -v ENVR-v5.3.dct
+  -b 4000 
+  -lmp 12 -6
+  -lmp2 12 -6
+  -walign
+  -fallback1pass
+  -multipath
+  -iwsp
+  -norealtime
+  -iwcd1 max
+  -spmodel sp
+  -spsegment
+  -gprune none
+  -no_ccd
+  -sepnum 150
+  -b2 360 
+  -n 40 
+  -s 2000 
+  -m 8000 
+  -lookuprange 5 
+  -sb 80
+  -forcedict
+  -cutsilence
 
 '''
 
@@ -111,11 +140,6 @@ class JuliusWrap(threading.Thread):
             prop = rtc._properties
             if prop.getProperty("julius.3rdparty_dir") :
                 self._config.julius(prop.getProperty("julius.3rdparty_dir"))
-
-            if prop.getProperty("julius.runkit_dir") :
-                self._config.julius_runkit(prop.getProperty("julius.runkit_dir"))
-            if prop.getProperty("julius.voxforge_dir") :
-                self._config.julius_voxforge(prop.getProperty("julius.voxforge_dir"))
 
             if os.path.isfile(rtc._jconf_file[0]) :
                 self._jconf_file = rtc._jconf_file[0]
@@ -176,13 +200,26 @@ class JuliusWrap(threading.Thread):
         self._cmdline.append(self._config._julius_bin)
 
         if self._mode == 'dictation' :
-            # dictation-kit-v4.4(GMM版デフォルトパラメータ）ただし、outputを5に変更
-            self._cmdline.extend(['-d',     self._config._julius_bingram_ja])
-            self._cmdline.extend(['-v',     self._config._julius_htkdic_ja])
-            self._cmdline.extend(['-h',     self._config._julius_hmm_ja])
-            self._cmdline.extend(['-hlist', self._config._julius_hlist_ja])
-            self._cmdline.extend(["-b", "1500", "-b2", "100", "-s", "500" ,"-m", "10000"])
-            self._cmdline.extend(["-n", "30", "-output", "5", "-zmeanframe", "-rejectshort" ,"800", "-lmp", '10' ,'0', '-lmp2', '10', '0'])
+            if self._lang in ('ja', 'jp'):
+                # dictation-kit-v4.4(GMM版デフォルトパラメータ）ただし、outputを5に変更
+                self._cmdline.extend(['-d',     self._config._julius_bingram_ja])
+                self._cmdline.extend(['-v',     self._config._julius_htkdic_ja])
+                self._cmdline.extend(['-h',     self._config._julius_hmm_ja])
+                self._cmdline.extend(['-hlist', self._config._julius_hlist_ja])
+                self._cmdline.extend(["-b", "1500", "-b2", "100", "-s", "500" ,"-m", "10000"])
+                self._cmdline.extend(["-n", "30", "-output", "5", "-zmeanframe", "-rejectshort" ,"800", "-lmp", '10' ,'0', '-lmp2', '10', '0'])
+            else:
+                self._cmdline = [self._config._julius_bin_en]
+                self._cmdline.extend(['-d',     self._config._julius_ngram_en])
+                self._cmdline.extend(['-v',     self._config._julius_dict_en])
+                self._cmdline.extend(['-h',     self._config._julius_hmm_en])
+                self._cmdline.extend(['-hlist', self._config._julius_hlist_en])
+                self._cmdline.extend(["-b", "4000", "-b2", "360", "-s", "2000" ,"-m", "8000"])
+                self._cmdline.extend(["-n", "40", "-output", "5",  "-lmp", '12' ,'-6', '-lmp2', '12', '-6'])
+                self._cmdline.extend(["-walign", "-fallback1pass", "-multipath", "-iwsp", "-norealtime", "-iwcd1", "max", "-spmodel", "sp", 
+                                      "-spsegment", "-gprune", "none", "-no_ccd",  "-sepnum", "150",  "-lookuprange", "5", "-sb", "80",
+                                      "-forcedict", "-cutsilence"])
+
         else:
             #
             #  Japanese
@@ -577,7 +614,8 @@ class JuliusRTC(OpenRTM_aist.DataFlowComponentBase):
     def onActivated(self, ec_id):
         OpenRTM_aist.DataFlowComponentBase.onActivated(self, ec_id)
         if self._mode == 'dictation' :
-            self._lang = 'ja'
+            pass
+            #self._lang = 'ja'
         else:
             self._lang = self._srgs._lang
 
@@ -778,6 +816,10 @@ class JuliusRTCManager:
             self._comp[a] = manager.createComponent("JuliusRTC?exec_cxt.periodic.rate=1")
             if a == 'dictation':
                 self._comp[a]._mode='dictation'
+                self._comp[a]._lang = 'ja'
+            elif a == 'dictation_en':
+                self._comp[a]._mode='dictation'
+                self._comp[a]._lang='en'
             else:
                 self._comp[a].setgrammarfile(a, self._rebuid_lexicon)
 

@@ -28,6 +28,8 @@ from glob import glob
 from __init__ import __version__
 import utils
 
+import configparser
+
 class config():
     def __init__(self):
         self._platform = platform.system()
@@ -49,15 +51,46 @@ class config():
 
         self._lexicondb = os.path.join(self._configdir, 'lexcon.db')
 
-        self.julius(os.path.join(self._basedir, "..") )
-        self.openjtalk(os.path.join(self._basedir, "3rdparty") )
-        self.festival(os.path.join(self._basedir, "3rdparty") )
+        self.julius(os.path.join(self._basedir, "3rdparty") )
+        #self.openjtalk(os.path.join(self._basedir, "3rdparty") )
+        #self.festival(os.path.join(self._basedir, "3rdparty") )
+
+        # config
+        self._configfile = configparser.ConfigParser()
+        if os.path.exists(os.path.join(self._basedir, 'julius.cfg')) :
+            self._configfile.read(os.path.join(self._basedir, 'julius.cfg'))
+
+        if 'julius.runkit_ja' in self._configfile :
+            self._julius_runkitdir = self._configfile['julius.runkit_dir']['base_dir'].replace('/', os.path.sep)
+            self._julius_bin = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_dir']['executable'].replace('/', os.path.sep))
+            self._julius_hmm_ja   = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_dir']['hmm'].replace('/', os.path.sep))
+            self._julius_hlist_ja = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_dir']['hist'].replace('/', os.path.sep))
+            self._julius_ngram_ja = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_dir']['ngram'].replace('/', os.path.sep))
+            self._julius_dict_ja  = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_dir']['dict'].replace('/', os.path.sep))
+            #
+            # for dictation
+            self._julius_bingram_ja = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_dir']['bingram'].replace('/', os.path.sep))
+            self._julius_htkdic_ja = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_dir']['htkdic'].replace('/', os.path.sep))
+
+        if 'julius.voxforge' in self._configfile :
+            self._julius_voxforgedir = self._configfile['julius.voxforge_dir']['base_dir']
+            self._julius_hmm_en = os.path.join(self._julius_voxforgedir, self._configfile['julius.voxforge_dir']['hmm'].replace('/', os.path.sep))
+            self._julius_hlist_en = os.path.join(self._julius_voxforgedir, self._configfile['julius.voxforge_dir']['hlist'].replace('/', os.path.sep))
+            self._julius_dict_en = os.path.join(self._julius_voxforgedir, self._configfile['julius.voxforge_dir']['dict'].replace('/', os.path.sep))
+
+        if 'julius.runkit_en' in self._configfile :
+            self._julius_runkitdir_en = self._configfile['julius.runkit_dir']['base_dir'].replace('/', os.path.sep)
+            self._julius_bin_en = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_dir']['executable'].replace('/', os.path.sep))
+            self._julius_hmm_en   = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_dir']['hmm'].replace('/', os.path.sep))
+            self._julius_hlist_en = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_dir']['hist'].replace('/', os.path.sep))
+            self._julius_ngram_en = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_dir']['ngram'].replace('/', os.path.sep))
+            self._julius_dict_en  = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_dir']['dict'].replace('/', os.path.sep))
+
     #
     #  For Julius
     #
     def julius(self, basedir):
         if self._platform == "Windows":
-            #self._julius_runkitdir = os.path.join(basedir, "dictation-kit-v4.4")
             self._julius_runkitdir = os.path.join(basedir, "dictation-kit")
             self._julius_voxforgedir = os.path.join(basedir, "Voxforge_AcousticModels")
 

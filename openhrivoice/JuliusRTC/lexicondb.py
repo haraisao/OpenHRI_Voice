@@ -34,6 +34,7 @@ class LexiconDB:
         if prop :
             if prop.getProperty("julius.3rdparty_dir") :
                 self._config.julius(prop.getProperty("julius.3rdparty_dir"))
+
         #
         self._db = sqlite3.connect(fname)
         createtable = rebuid
@@ -44,6 +45,7 @@ class LexiconDB:
             # create version table if not
             self.createversiontable(version)
             createtable = True
+            
         elif len(self._db.execute(u"select text from version where text = '%s';" % (version,)).fetchall()) == 0:
             # check version
             self._db.execute(u'drop table version;')
