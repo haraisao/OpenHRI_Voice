@@ -835,9 +835,9 @@ class JuliusRTCManager:
             if a == 'dictation':
                 self._comp[a]._mode='dictation'
                 self._comp[a]._lang = 'ja'
-            elif a == 'dictation_en':
-                self._comp[a]._mode='dictation'
-                self._comp[a]._lang='en'
+            #elif a == 'dictation_en':
+            #    self._comp[a]._mode='dictation'
+            #    self._comp[a]._lang='en'
             else:
                 self._comp[a].setgrammarfile(a, self._rebuid_lexicon)
 
