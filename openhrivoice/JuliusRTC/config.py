@@ -88,6 +88,7 @@ class config():
             self._julius_dict_hlist_en = os.path.join(self._julius_runkitdir_en, self._configfile['julius.runkit_en']['hlist'].replace('/', os.path.sep))
             self._julius_dict_ngram_en = os.path.join(self._julius_runkitdir_en, self._configfile['julius.runkit_en']['ngram'].replace('/', os.path.sep))
             self._julius_dict_dict_en  = os.path.join(self._julius_runkitdir_en, self._configfile['julius.runkit_en']['dict'].replace('/', os.path.sep))
+            self._julius_dict_htkconf_en  = os.path.join(self._julius_runkitdir_en, self._configfile['julius.runkit_en']['htkconf'].replace('/', os.path.sep))
 
     #
     #  For Julius
