@@ -21,21 +21,16 @@ import signal
 import tempfile
 import traceback
 import platform
-import codecs
-import locale
 import wave
 import optparse
 import OpenRTM_aist
 import RTC
+
 from openhrivoice.__init__ import __version__
 from openhrivoice import utils
 from openhrivoice.config import config
 from openhrivoice.VoiceSynthComponentBase import *
-#try:
-#    import gettext
-#    _ = gettext.translation(domain='openhrivoice', localedir=os.path.dirname(__file__)+'/../share/locale').ugettext
-#except:
-#    _ = lambda s: s
+
 
 __doc__ = English speech synthesis component.'
 
@@ -68,7 +63,7 @@ class FestivalWrap(VoiceSynthBase):
         durfile = self.gettempname().replace("\\", "\\\\")
         wavfile = self.gettempname().replace("\\", "\\\\")
         # text file which specifies synthesized string
-        fp = codecs.open(textfile, 'w', 'utf-8')
+        fp = open(textfile, 'w', encoding='utf-8')
         fp.write('(set! u (Utterance Text "' + data + '"))')
         fp.write('(utt.synth u)')
         fp.write('(utt.save.segs u "' + durfile + '")')
@@ -154,10 +149,6 @@ class FestivalRTCManager:
     #
     #
     def __init__(self):
-        encoding = locale.getpreferredencoding()
-        #sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-        #sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
-
         parser = utils.MyParser(version=__version__, description=__doc__)
         utils.addmanageropts(parser)
         try:

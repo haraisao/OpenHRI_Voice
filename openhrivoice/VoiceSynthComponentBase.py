@@ -10,8 +10,8 @@ Copyright (C) 2010
     Japan
     All rights reserved.
 
-Copyright (C) 2017
-    Isao Hara,
+Copyright (C) 2017-2019
+    Isao Hara
     National Institute of Advanced Industrial Science and Technology (AIST), Japan
     All rights reserved.
 
@@ -22,19 +22,25 @@ http://www.opensource.org/licenses/eclipse-1.0.txt
 import os
 import sys
 import time
-import subprocess
 import signal
 import tempfile
 import traceback
 import platform
-import codecs
-import locale
 import wave
-import optparse
+
 import OpenRTM_aist
 import RTC
-from openhrivoice import utils
 
+
+#
+#  get current time
+#
+def getCurrentTime():
+  if platform.system() == 'Windows':
+    now = time.clock()
+  else:
+    now = time.time()
+  return now
 
 #
 #   Voice Synthesizer Base Class
@@ -229,7 +235,7 @@ class VoiceSynthComponentBase(OpenRTM_aist.DataFlowComponentBase):
         OpenRTM_aist.DataFlowComponentBase.onExecute(self, ec_id)
         try:
             # send stream
-            now = utils.getCurrentTime()
+            now = getCurrentTime()
             chunk = int(self._samplerate[0] * (now - self._prevtime))
             data = None
             if chunk > 0:

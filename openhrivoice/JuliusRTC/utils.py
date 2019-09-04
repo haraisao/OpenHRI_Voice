@@ -134,25 +134,3 @@ def genmanagerargs(opt):
     if opt.mastermode == True:
         args.append('-d')
 
-#
-#  Read file
-#
-def read_file_contents(fname):
-  try:
-    f=open(fname,'r')
-    contents = f.read()
-    f.close()
-    return contents
-  except:
-    return ""
-    
-#
-#  get current time
-#
-def getCurrentTime():
-  if platform.system() == 'Windows':
-    now = time.clock()
-  else:
-    now = time.time()
-  return now
-

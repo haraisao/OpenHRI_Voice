@@ -21,7 +21,7 @@ http://www.opensource.org/licenses/eclipse-1.0.txt
 '''
 
 import sys, os, socket, subprocess, signal, threading, platform
-import time, struct, traceback, locale, codecs, getopt, wave, tempfile
+import time, struct, traceback, getopt, wave, tempfile
 import optparse
 from glob import glob
 from lxml import *
@@ -35,7 +35,6 @@ import RTC
 from __init__ import __version__
 import utils
 from config import config
-
 
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -95,6 +94,29 @@ ENVR-v5.4.Gmm.Bin:
 '''
 
 #
+#  Read file
+#
+def read_file_contents(fname, encoding='utf-8'):
+  try:
+    f=open(fname,'r', encoding=encoding)
+    contents = f.read()
+    f.close()
+    return contents
+  except:
+    return ""
+
+#
+#
+#  Selector dialog for multi-files reading
+#
+def askopenfilenames(title=''):
+    import tkinter, tkinter.filedialog
+    root = tkinter.Tk()
+    root.withdraw()
+    fTyp = [("","*")]
+    fname = tkinter.filedialog.askopenfilenames(filetypes = fTyp, initialdir = "", title=title)
+    return fname
+
 #  Julius Wrappper
 #
 class JuliusWrap(threading.Thread):
@@ -210,10 +232,10 @@ class JuliusWrap(threading.Thread):
                 self._cmdline.extend(["-n", "30", "-output", "5", "-zmeanframe", "-rejectshort" ,"800", "-lmp", '10' ,'0', '-lmp2', '10', '0'])
             else:
                 self._cmdline = [self._config._julius_bin_en]
-                self._cmdline.extend(['-d',     self._config._julius_ngram_en])
-                self._cmdline.extend(['-v',     self._config._julius_dict_en])
-                self._cmdline.extend(['-h',     self._config._julius_hmm_en])
-                self._cmdline.extend(['-hlist', self._config._julius_hlist_en])
+                self._cmdline.extend(['-d',     self._config._julius_dict_ngram_en])
+                self._cmdline.extend(['-v',     self._config._julius_dict_dict_en])
+                self._cmdline.extend(['-h',     self._config._julius_dict_hmm_en])
+                self._cmdline.extend(['-hlist', self._config._julius_dict_hlist_en])
                 self._cmdline.extend(["-b", "4000", "-b2", "360", "-s", "2000" ,"-m", "8000"])
                 self._cmdline.extend(["-n", "40", "-output", "5",  "-lmp", '12' ,'-6', '-lmp2', '12', '-6'])
                 self._cmdline.extend(["-walign", "-fallback1pass", "-multipath", "-iwsp", "-norealtime", "-iwcd1", "max", "-spmodel", "sp", 
@@ -530,8 +552,8 @@ class JuliusRTC(OpenRTM_aist.DataFlowComponentBase):
         self._config = config()
 
         self._copyrights = []
-        self._copyrights.append( utils.read_file_contents(os.path.join( self._config._basedir, "doc", "julius_copyright.txt")))
-        self._copyrights.append( utils.read_file_contents(os.path.join( self._config._basedir, "doc", "voxforge_copyright.txt")))
+        self._copyrights.append( read_file_contents(os.path.join( self._config._basedir, "doc", "julius_copyright.txt")))
+        self._copyrights.append( read_file_contents(os.path.join( self._config._basedir, "doc", "voxforge_copyright.txt")))
 
     #
     #  OnInitialize
@@ -753,10 +775,6 @@ class JuliusRTCManager:
     #  Constructor
     #
     def __init__(self):
-        encoding = locale.getpreferredencoding()
-        #sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-        #sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
-
         parser = utils.MyParser(version=__version__, usage="%prog [srgsfile]",
                                 description=__doc__)
         utils.addmanageropts(parser)
@@ -779,7 +797,7 @@ class JuliusRTCManager:
             sys.exit(1)
 
         if opts.guimode == True:
-            sel = utils.askopenfilenames(title="select W3C-SRGS grammar files")
+            sel = askopenfilenames(title="select W3C-SRGS grammar files")
             if sel is not None:
                 args.extend(sel)
     
