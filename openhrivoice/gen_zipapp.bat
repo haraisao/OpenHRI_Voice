@@ -6,6 +6,6 @@
 
 
 @set MODULE=%1 
-%PYTHON_BASE%\python -m zipapp %MODULE% -m "%MODULE%:main"
+%PYTHON_BASE%\python -m zipapp %MODULE% -m "%MODULE: =%:main"
 
 @endlocal

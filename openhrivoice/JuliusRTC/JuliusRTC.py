@@ -37,7 +37,7 @@ import utils
 from config import config
 
 import signal
-signal.signal(signal.SIGINT, signal.SIG_DFL)
+#signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
 __doc__ = "Julius (English and Japanese) speech recognition component."
@@ -61,35 +61,32 @@ am-gmm.jconf
   -hlist model/phone_m/logicalTri-3k16-gid.bin # 論理的に出現しうる triphone -> 定義されている triphoneの対応を指定した「HMMListファイル」
   -lmp  10 0  # 言語重みと挿入ペナルティ: 第1パス(2-gram)
   -lmp2 10 0  # 言語重みと挿入ペナルティ: 第2パス(3-gram)
-
+  
+------------------------------
 ENVR-v5.4.Gmm.Bin:
-  -htkconf wav_config
-  -h ENVR-v5.3.am
-  -hlist ENVR-v5.3.phn
-  -d ENVR-v5.3.lm
-  -v ENVR-v5.3.dct
-  -b 4000 
-  -lmp 12 -6
-  -lmp2 12 -6
-  -walign
-  -fallback1pass
-  -multipath
-  -iwsp
-  -norealtime
-  -iwcd1 max
-  -spmodel sp
-  -spsegment
-  -gprune none
-  -no_ccd
-  -sepnum 150
-  -b2 360 
-  -n 40 
-  -s 2000 
-  -m 8000 
-  -lookuprange 5 
-  -sb 80
-  -forcedict
-  -cutsilence
+-input mic
+-htkconf wav_config
+-h ENVR-v5.3.am
+-hlist ENVR-v5.3.phn
+-d ENVR-v5.3.lm
+-v ENVR-v5.3.dct
+-b 4000 
+-b2 360 
+-s 2000 
+-m 8000 
+-n 40 
+-lmp 12 -6
+-lmp2 12 -6
+-fallback1pass
+-multipath
+-iwsp
+-iwcd1 max
+-spmodel sp
+-no_ccd
+-sepnum 150
+-lookuprange 5 
+-sb 80
+-forcedict
 
 '''
 
@@ -116,6 +113,9 @@ def askopenfilenames(title=''):
     fTyp = [("","*")]
     fname = tkinter.filedialog.askopenfilenames(filetypes = fTyp, initialdir = "", title=title)
     return fname
+
+
+
 
 #  Julius Wrappper
 #
@@ -771,6 +771,14 @@ class JuliusRTC(OpenRTM_aist.DataFlowComponentBase):
         self._srgs = SRGS(gram, self._properties, rebuid)
         print ("done")
 
+    #
+    #
+    def kill_julius(self):
+        if self._j:
+            self._j.terminate()
+            self._j.join()
+            self._j = None
+
 #
 #  JuliusRTCManager Class
 #
@@ -828,6 +836,14 @@ class JuliusRTCManager:
         self._manager.runManager(False)
 
     #
+    #  shutdown manager
+    #
+    def shutdown(self):
+        for x in self._comp:
+            self._comp[x].kill_julius()
+        self._manager.shutdown()
+
+    #
     #  Initialize rtc
     #
     def moduleInit(self, manager):
@@ -845,14 +861,27 @@ class JuliusRTCManager:
             else:
                 self._comp[a].setgrammarfile(a, self._rebuid_lexicon)
 
+#
+#
+g_manager = None
+#
+#
+def sig_handler(num, frame):
+    global g_manager
+    if g_manager:
+        g_manager.shutdown()
+
 def main():
-    manager = JuliusRTCManager()
-    manager.start()
+    global g_manager
+    signal.signal(signal.SIGINT, sig_handler)
+    g_manager = JuliusRTCManager()
+    g_manager.start()
 
 #
 #  Main
 #
 if __name__=='__main__':
-    manager = JuliusRTCManager()
-    manager.start()
+    main()
+    #manager = JuliusRTCManager()
+    #manager.start()
 
