@@ -19,24 +19,21 @@ import time
 import urllib
 import tempfile
 import traceback
-import codecs
-import locale
 import wave
 import optparse
 import OpenRTM_aist
 import RTC
-from openhrivoice.__init__ import __version__
-from openhrivoice import utils
-from openhrivoice.config import config
-from openhrivoice.VoiceSynthComponentBase import *
+from __init__ import __version__
+import utils
 
-__doc__ = 'German speech synthesis component using MARY.'
+from VoiceSynthComponentBase import *
+
+
+__doc__ = _('German speech synthesis component using MARY.')
 
 class MARYTalkWrap(VoiceSynthBase):
     def __init__(self, rtc):
         VoiceSynthBase.__init__(self)
-        self._conf = config()
-
         prop = rtc._properties
         if prop.getProperty("mary.sox_dir") :
             self._conf.sox_top(prop.getProperty("mary.sox_dir"))
@@ -184,13 +181,8 @@ class MARYRTCManager:
         manager.registerFactory(profile, MARYRTC, OpenRTM_aist.Delete)
         self._comp = manager.createComponent("MARYRTC")
 
+
 def main():
-    #locale.setlocale(locale.LC_CTYPE, "")
-    #encoding = locale.getlocale()[1]
-    #if not encoding:
-    #    encoding = "us-ascii"
-    #sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-    #sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
     manager = MARYRTCManager()
     manager.start()
 

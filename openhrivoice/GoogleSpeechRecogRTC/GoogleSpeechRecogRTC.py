@@ -14,12 +14,12 @@ http://www.opensource.org/licenses/eclipse-1.0.txt
 '''
 
 import sys, os, socket, subprocess, signal, threading, platform
-import time, struct, traceback, locale, codecs, getopt, wave, tempfile
+import time, struct, traceback, getopt, wave, tempfile
 import optparse
 
 import json
 import urllib
-import urllib2
+import urllib.request, urllib.error
 
 from pydub import AudioSegment
 from pydub.silence import *
@@ -28,11 +28,10 @@ from xml.dom.minidom import Document
 
 import OpenRTM_aist
 import RTC
-from openhrivoice.__init__ import __version__
-from openhrivoice import utils
-from openhrivoice.config import config
+from __init__ import __version__
+import utils
 
-from openhrivoice.CloudSpeechRecogBase import CloudSpeechRecogBase
+from CloudSpeechRecogBase import CloudSpeechRecogBase
 
 __doc__ = 'Google Speech Recognition component.'
 
@@ -46,7 +45,6 @@ class GoogleSpeechRecogWrap(CloudSpeechRecogBase):
     #
     def __init__(self, rtc, language='ja-JP'):
         CloudSpeechRecogBase.__init__(self, language)
-        self._config = config()
 
         self._endpoint = 'http://www.google.com/speech-api/v2/recognize'
 
@@ -83,8 +81,8 @@ class GoogleSpeechRecogWrap(CloudSpeechRecogBase):
         voice_data = str(bytearray(data))
 
         try:
-            request = urllib2.Request(url, data=voice_data, headers=headers)
-            result = urllib2.urlopen(request)
+            request = urllib.request.Request(url, data=voice_data, headers=headers)
+            result = urllib.urlopen(request)
             response = result.read()
             return response.decode('utf-8').split()
         except:
@@ -152,7 +150,6 @@ class GoogleSpeechRecogRTC(OpenRTM_aist.DataFlowComponentBase):
     #
     def __init__(self, manager):
         OpenRTM_aist.DataFlowComponentBase.__init__(self, manager)
-        self._config = config()
         self._recog = None
         self._copyrights=[]
         self._lang = [ "ja-JP" ]
@@ -171,10 +168,10 @@ class GoogleSpeechRecogRTC(OpenRTM_aist.DataFlowComponentBase):
         self._logger.RTC_INFO("Copyright (C) 2017 Isao Hara")
         #
         #
-	self.bindParameter("lang", self._lang, "ja-JP")
-	self.bindParameter("min_silence", self._min_silence, "200")
-	self.bindParameter("silence_thr", self._silence_thr, "-20")
-	self.bindParameter("min_buflen", self._min_buflen, "8000")
+        self.bindParameter("lang", self._lang, "ja-JP")
+        self.bindParameter("min_silence", self._min_silence, "200")
+        self.bindParameter("silence_thr", self._silence_thr, "-20")
+        self.bindParameter("min_buflen", self._min_buflen, "8000")
         #
         # create inport for audio stream
         self._indata = RTC.TimedOctetSeq(RTC.Time(0,0), None)
@@ -301,9 +298,6 @@ class GoogleSpeechRecogManager:
     #  Constructor
     #
     def __init__(self):
-        #encoding = locale.getpreferredencoding()
-        #sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-        #sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
 
         parser = utils.MyParser(version=__version__, description=__doc__)
         utils.addmanageropts(parser)
@@ -325,6 +319,9 @@ class GoogleSpeechRecogManager:
     def start(self):
         self._manager.runManager(False)
 
+    def shutdown(self):
+        self._manager.shutdown()
+
     #
     #  Initialize rtc
     #
@@ -334,15 +331,28 @@ class GoogleSpeechRecogManager:
 
         self._comp = manager.createComponent("GoogleSpeechRecogRTC?exec_cxt.periodic.rate=1")
 
+#
+#
+g_manager = None
+
+#
+# 
+def sig_handler(num, frame):
+    global g_manager
+    if g_manager:
+        g_manager.shutdown()
+#
+#
+#
 def main():
-    manager = GoogleSpeechRecogManager()
-    manager.start()
+    global g_manager
+    signal.signal(signal.SIGINT, sig_handler)
+    g_manager = GoogleSpeechRecogManager()
+    g_manager.start()
 
 
 #
 #  Main
 #
 if __name__=='__main__':
-    manager = GoogleSpeechRecogManager()
-    manager.start()
-
+    main()

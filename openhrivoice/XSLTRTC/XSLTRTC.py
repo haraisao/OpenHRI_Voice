@@ -21,11 +21,12 @@ import codecs
 import locale
 import optparse
 from lxml import etree
-from StringIO import StringIO
+from io import StringIO
 import OpenRTM_aist
 import RTC
-from openhrivoice.__init__ import __version__
-from openhrivoice import utils
+from __init__ import __version__
+import utils
+
 
 __doc__ = 'XML transformation component.'
 
@@ -80,7 +81,7 @@ class XSLTRTC(OpenRTM_aist.DataFlowComponentBase):
         try:
             #udata = data.data.decode("utf-8")
             udoc = etree.parse(StringIO(data.data))
-            self._outdata.data = self._transform(udoc).encode("utf-8")
+            self._outdata.data = unicode(self._transform(udoc)).encode("utf-8")
             self._outport.write(self._outdata)
             self._logger.RTC_INFO(self._outdata.data.decode("utf-8"))
         except:
@@ -92,10 +93,6 @@ class XSLTRTC(OpenRTM_aist.DataFlowComponentBase):
 
 class XSLTRTCManager:
     def __init__(self):
-        #encoding = locale.getpreferredencoding()
-        #sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-        #sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
-
         parser = utils.MyParser(version=__version__, usage="%prog [xsltfile]",
                                 description=__doc__)
         utils.addmanageropts(parser)

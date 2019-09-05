@@ -18,8 +18,6 @@ import time, struct, traceback, locale, codecs, getopt, wave, tempfile
 import optparse
 
 import json
-import urllib
-import urllib2
 
 from pydub import AudioSegment
 from pydub.silence import *
@@ -28,14 +26,14 @@ from xml.dom.minidom import Document
 
 import OpenRTM_aist
 import RTC
-from openhrivoice.__init__ import __version__
-from openhrivoice import utils
-from openhrivoice.config import config
+from __init__ import __version__
+import utils
 
-from openhrivoice.CloudSpeechRecogBase import CloudSpeechRecogBase
-from openhrivoice.RecaiusSpeechRecogRTC.recaius import RecaiusAsr
+from CloudSpeechRecogBase import CloudSpeechRecogBase
+from recaius import RecaiusAsr
 
-__doc__ = 'Google Speech Recognition component.'
+
+__doc__ = _('Google Speech Recognition component.')
 
 
 #
@@ -48,7 +46,6 @@ class RecaiusSpeechRecogWrap(CloudSpeechRecogBase):
     #
     def __init__(self, rtc, language='jp', ex_sec=600):
         CloudSpeechRecogBase.__init__(self, language)
-        self._config = config()
         self._service_id={}
         self._password=""
 
@@ -96,7 +93,7 @@ class RecaiusSpeechRecogWrap(CloudSpeechRecogBase):
 #
 RecaiusSpeechRecogRTC_spec = ["implementation_id", "RecaiusSpeechRecogRTC",
                   "type_name",         "RecaiusSpeechRecogRTC",
-                  "description",       __doc__,
+                  "description",       __doc__.encode('UTF-8'),
                   "version",           __version__,
                   "vendor",            "AIST",
                   "category",          "communication",
@@ -105,20 +102,20 @@ RecaiusSpeechRecogRTC_spec = ["implementation_id", "RecaiusSpeechRecogRTC",
                   "language",          "Python",
                   "lang_type",         "script",
 
-		  "conf.default.lang", "jp",
-		  "conf.__widget__.lang", "text",
+                  "conf.default.lang", "jp",
+                  "conf.__widget__.lang", "text",
                   "conf.__type__.lang", "string",
 
-		  "conf.default.min_buflen", "8000",
-		  "conf.__widget__.min_buflen", "text",
+                  "conf.default.min_buflen", "8000",
+                  "conf.__widget__.min_buflen", "text",
                   "conf.__type__.min_buflen", "int",
 
-		  "conf.default.min_silence", "200",
-		  "conf.__widget__.min_silence", "text",
+                  "conf.default.min_silence", "200",
+                  "conf.__widget__.min_silence", "text",
                   "conf.__type__.min_silence", "int",
 
-		  "conf.default.silence_thr", "-20",
-		  "conf.__widget__.silence_thr", "text",
+                  "conf.default.silence_thr", "-20",
+                  "conf.__widget__.silence_thr", "text",
                   "conf.__type__.silence_thr", "int",
 
                   ""]
@@ -150,7 +147,6 @@ class RecaiusSpeechRecogRTC(OpenRTM_aist.DataFlowComponentBase):
     #
     def __init__(self, manager):
         OpenRTM_aist.DataFlowComponentBase.__init__(self, manager)
-        self._config = config()
         self._recog = None
         self._copyrights=[]
         self._lang = [ "ja-JP" ]
@@ -169,15 +165,15 @@ class RecaiusSpeechRecogRTC(OpenRTM_aist.DataFlowComponentBase):
         self._logger.RTC_INFO("Copyright (C) 2017 Isao Hara")
         #
         #
-	self.bindParameter("lang", self._lang, "jp")
-	self.bindParameter("min_silence", self._min_silence, "200")
-	self.bindParameter("silence_thr", self._silence_thr, "-20")
-	self.bindParameter("min_buflen", self._min_buflen, "8000")
+        self.bindParameter("lang", self._lang, "jp")
+        self.bindParameter("min_silence", self._min_silence, "200")
+        self.bindParameter("silence_thr", self._silence_thr, "-20")
+        self.bindParameter("min_buflen", self._min_buflen, "8000")
         #
         # create inport for audio stream
         self._indata = RTC.TimedOctetSeq(RTC.Time(0,0), None)
         self._inport = OpenRTM_aist.InPort("data", self._indata)
-        self._inport.appendProperty('description', 'Audio data (in packets) to be recognized.')
+        self._inport.appendProperty('description', _('Audio data (in packets) to be recognized.').encode('UTF-8'))
         self._inport.addConnectorDataListener(OpenRTM_aist.ConnectorDataListenerType.ON_BUFFER_WRITE,
                                               DataListener("data", self, RTC.TimedOctetSeq))
         self.registerInPort(self._inport._name, self._inport)
@@ -186,7 +182,7 @@ class RecaiusSpeechRecogRTC(OpenRTM_aist.DataFlowComponentBase):
         # create outport for result
         self._outdata = RTC.TimedString(RTC.Time(0,0), "")
         self._outport = OpenRTM_aist.OutPort("result", self._outdata)
-        self._outport.appendProperty('description', 'Recognition result in XML format.')
+        self._outport.appendProperty('description', _('Recognition result in XML format.').encode('UTF-8'))
         self.registerOutPort(self._outport._name, self._outport)
 
         self._logger.RTC_INFO("This component depends on following softwares and datas:")
@@ -297,9 +293,9 @@ class RecaiusSpeechRecogManager:
     #  Constructor
     #
     def __init__(self):
-        #encoding = locale.getpreferredencoding()
-        #sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-        #sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
+        encoding = locale.getpreferredencoding()
+        sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
+        sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
 
         parser = utils.MyParser(version=__version__, description=__doc__)
         utils.addmanageropts(parser)
@@ -307,7 +303,7 @@ class RecaiusSpeechRecogManager:
         try:
             opts, args = parser.parse_args()
         except optparse.OptionError as e:
-            print ('OptionError:', e, file=sys.stderr)
+            print  ('OptionError:', e, file=sys.stderr)
             sys.exit(1)
 
         self._comp = None
