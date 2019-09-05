@@ -20,7 +20,7 @@ class parseopenjtalk:
         self._durations = []
 
     def parse(self, fname):
-        f = open(fname, 'r')
+        f = open(fname, 'r', encoding='utf-8')
         f_duration = False
         for l in f:
             l = l.strip(' \n')
@@ -48,16 +48,16 @@ class parseopenjtalk:
                 pass
 
     def toseg(self):
-        s = u'#\n'
+        s = '#\n'
         for d in self._durations:
             t = float(d[1]-d[0])/1000000
-            s += u'%f 125 %s\n' % (t, d[2])
+            s += '%f 125 %s\n' % (t, d[2])
         return s
 
 def main():
     d = parseopenjtalk()
     d.parse(sys.argv[1])
-    print d.toseg()
+    print (d.toseg())
 
 if __name__=='__main__':
     main()

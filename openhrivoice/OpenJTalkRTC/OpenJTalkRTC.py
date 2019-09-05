@@ -24,21 +24,16 @@ import sys
 import time
 import subprocess
 import signal
-import tempfile
 import traceback
 import platform
-import codecs
-import locale
 import optparse
-import wave
-import socket
 import OpenRTM_aist
 import RTC
-from openhrivoice.__init__ import __version__
-from openhrivoice import utils
-from openhrivoice.config import config
-from openhrivoice.OpenJTalkRTC.parseopenjtalk import parseopenjtalk
-from openhrivoice.VoiceSynthComponentBase import *
+from __init__ import __version__
+import utils
+from config import config
+from parseopenjtalk import parseopenjtalk
+from VoiceSynthComponentBase import *
 
 
 __doc__ = 'Japanese speech synthesis component.'
@@ -74,6 +69,18 @@ open_jtalk - The Japanese TTS system "Open JTalk"
 '''
 
 #
+#  Read file
+#
+def read_file_contents(fname, encoding='utf-8'):
+  try:
+    f=open(fname,'r', encoding=encoding)
+    contents = f.read()
+    f.close()
+    return contents
+  except:
+    return ""
+
+#
 #  OpenJTalk Process Wrapper
 #
 class OpenJTalkWrap(VoiceSynthBase):
@@ -95,6 +102,7 @@ class OpenJTalkWrap(VoiceSynthBase):
         self._gv_spectrum = 1.0
         self._gv_log_f0 = 1.0
         self._volume = 0.0
+        self._proc = None
 
         if prop.getProperty("openjtalk.3rdparty_dir") :
             self._conf.openjtalk(prop.getProperty("openjtalk.3rdparty_dir"))
@@ -115,19 +123,23 @@ class OpenJTalkWrap(VoiceSynthBase):
             self._conf._openjtalk_phonemodel_female_ja=prop.getProperty("openjtalk.phonemodel_female_ja")
 
         cmdarg = [ openjtalk_bin ]
-        (stdoutstr, stderrstr) = subprocess.Popen(cmdarg, stdout = subprocess.PIPE, stderr = subprocess.PIPE).communicate()
-
+        self._proc = subprocess.Popen(cmdarg, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+        try:
+            stdoutstr, stderrstr = self._proc.communicate()
+        except:
+            print("Error in self._proc.communicate()")
+    
         #
         #  Read Copyright Files of Phonemodels
         #
         self._copyrights = []
-        for l in stderrstr.replace('\r', '').split('\n\n'):
+        for l in stderrstr.decode('utf-8').replace('\r', '').split('\n\n'):
             if l.count('All rights reserved.') > 0:
                 self._copyrights.append(l)
         #
         #  read copyright
-        self._copyrights.append(utils.read_file_contents('hts_voice_copyright.txt'))
-        self._copyrights.append(utils.read_file_contents('mmdagent_mei_copyright.txt'))
+        self._copyrights.append(read_file_contents('hts_voice_copyright.txt'))
+        self._copyrights.append(read_file_contents('mmdagent_mei_copyright.txt'))
 
    #
    #  TTS conversion
@@ -138,7 +150,7 @@ class OpenJTalkWrap(VoiceSynthBase):
         logfile  = self.gettempname()
 
         # text file which specifies synthesized string
-        fp = codecs.open(textfile, 'w', 'utf-8')
+        fp = open(textfile, 'w', encoding='utf-8')
         fp.write(u"%s\n" % (data,))
         fp.close()
 
@@ -221,7 +233,7 @@ class OpenJTalkWrap(VoiceSynthBase):
         # read duration data
         d = parseopenjtalk()
         d.parse(logfile)
-        durationdata = d.toseg().encode("utf-8")
+        durationdata = d.toseg()
         os.remove(textfile)
         os.remove(logfile)
         return (durationdata, wavfile)
@@ -249,6 +261,8 @@ class OpenJTalkWrap(VoiceSynthBase):
     #  terminated
     #
     def terminate(self):
+        if self._proc :
+            self._proc.terminate()
         pass
 #
 #  for RTC specification
@@ -385,10 +399,6 @@ class OpenJTalkRTCManager:
     # Constructor
     #
     def __init__(self):
-        #encoding = locale.getpreferredencoding()
-        #sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-        #sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
-
         parser = utils.MyParser(version=__version__, description=__doc__)
         utils.addmanageropts(parser)
         try:
@@ -408,6 +418,12 @@ class OpenJTalkRTCManager:
         self._manager.runManager(False)
 
     #
+    #  shutdown manager
+    #
+    def shutdown(self):
+        self._manager.shutdown()
+
+    #
     #  Module Initializer
     #
     def moduleInit(self, manager):
@@ -415,9 +431,20 @@ class OpenJTalkRTCManager:
         manager.registerFactory(profile, OpenJTalkRTC, OpenRTM_aist.Delete)
         self._comp = manager.createComponent("OpenJTalkRTC")
 
+#
+#
+g_manager = None
+
+def sig_handler(num, frame):
+    global g_manager
+    if g_manager:
+        g_manager.shutdown()
+
 def main():
-    manager = OpenJTalkRTCManager()
-    manager.start()
+    global g_manager
+    signal.signal(signal.SIGINT, sig_handler)
+    g_manager = OpenJTalkRTCManager()
+    g_manager.start()
 
 #
 #  Main Function
