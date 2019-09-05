@@ -26,13 +26,25 @@ import optparse
 import OpenRTM_aist
 import RTC
 
-from openhrivoice.__init__ import __version__
-from openhrivoice import utils
-from openhrivoice.config import config
-from openhrivoice.VoiceSynthComponentBase import *
+from __init__ import __version__
+import utils
+from config import config
+from VoiceSynthComponentBase import *
+
+#
+#  Read file
+#
+def read_file_contents(fname, encoding='utf-8'):
+  try:
+    f=open(fname,'r', encoding=encoding)
+    contents = f.read()
+    f.close()
+    return contents
+  except:
+    return ""
 
 
-__doc__ = English speech synthesis component.'
+__doc__ = 'English speech synthesis component.'
 
 #
 #  Festival Wrapper class
@@ -53,8 +65,8 @@ class FestivalWrap(VoiceSynthBase):
         self._cmdline =[self._config._festival_bin, '--pipe']
         self._cmdline.extend(self._config._festival_opt)
         self._copyrights = []
-        self._copyrights.append(utils.read_file_contents('festival_copyright.txt'))
-        self._copyrights.append(utils.read_file_contents('diphone_copyright.txt'))
+        self._copyrights.append(read_file_contents('festival_copyright.txt'))
+        self._copyrights.append(read_file_contents('diphone_copyright.txt'))
 
     #
     #  Syntheseizer 
@@ -72,6 +84,7 @@ class FestivalWrap(VoiceSynthBase):
 
         # run Festival
         cmdarg =[self._config._festival_bin,] + self._config._festival_opt + ['-b', textfile]
+        #print(cmdarg)
         p = subprocess.Popen(cmdarg)
         p.wait()
         #p = subprocess.Popen(self._cmdline, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
@@ -83,7 +96,7 @@ class FestivalWrap(VoiceSynthBase):
 
         # read data
         df = open(durfile, 'r')
-        durationdata = df.read().encode("utf-8")
+        durationdata = df.read()
         df.close()
         os.remove(durfile)
         return (durationdata, wavfile)
@@ -168,6 +181,11 @@ class FestivalRTCManager:
 
     #
     #
+    def shutdown(self):
+        self._manager.shutdown()
+        
+    #
+    #
     def moduleInit(self, manager):
         profile=OpenRTM_aist.Properties(defaults_str=FestivalRTC_spec)
         manager.registerFactory(profile, FestivalRTC, OpenRTM_aist.Delete)
@@ -175,10 +193,20 @@ class FestivalRTCManager:
 
 #
 #
+g_manager = None
+
+def sig_handler(num, frame):
+    global g_manager
+    if g_manager:
+        g_manager.shutdown()
+#
+#
 #
 def main():
-    manager = FestivalRTCManager()
-    manager.start()
+    global g_manager
+    signal.signal(signal.SIGINT, sig_handler)
+    g_manager = FestivalRTCManager()
+    g_manager.start()
 
 if __name__=='__main__':
     main()

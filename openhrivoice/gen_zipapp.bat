@@ -8,4 +8,10 @@
 @set MODULE=%1 
 %PYTHON_BASE%\python -m zipapp %MODULE% -m "%MODULE: =%:main"
 
+@set EXEC_FILE=%MODULE: =%.exe
+
+@if not exist %EXEC_FILE% @(
+    copy cli64.exe  %EXEC_FILE%
+)
+
 @endlocal

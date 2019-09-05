@@ -149,18 +149,11 @@ class config():
         if 'julius.runkit_en' in configfile :
             try:
                 self._julius_runkitdir_en = configfile['julius.runkit_en']['base_dir'].replace('/', os.path.sep)
-                print("-- 1")
                 self._julius_bin_en = os.path.join(self._julius_runkitdir_en, configfile['julius.runkit_en']['executable'].replace('/', os.path.sep))
-                print("-- 2")
                 self._julius_dict_hmm_en   = os.path.join(self._julius_runkitdir_en, configfile['julius.runkit_en']['hmm'].replace('/', os.path.sep))
-                print("-- 3")
                 self._julius_dict_hlist_en = os.path.join(self._julius_runkitdir_en, configfile['julius.runkit_en']['hlist'].replace('/', os.path.sep))
-                print("-- 4")
                 self._julius_dict_ngram_en = os.path.join(self._julius_runkitdir_en, configfile['julius.runkit_en']['ngram'].replace('/', os.path.sep))
-                print("-- 5")
                 self._julius_dict_dict_en  = os.path.join(self._julius_runkitdir_en, configfile['julius.runkit_en']['dict'].replace('/', os.path.sep))
-                print("-- 6")
                 self._julius_dict_htkconf_en  = os.path.join(self._julius_runkitdir_en, configfile['julius.runkit_en']['htkconf'].replace('/', os.path.sep))
-                print("-- 7")
             except:
                 print("=== Error in set_runkit_en")
