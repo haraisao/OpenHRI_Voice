@@ -115,8 +115,6 @@ def askopenfilenames(title=''):
     return fname
 
 
-
-
 #  Julius Wrappper
 #
 class JuliusWrap(threading.Thread):
@@ -171,8 +169,8 @@ class JuliusWrap(threading.Thread):
         if self._mode != "client" :
             self.setupSubprocess()
 
-            print ("command line: %s" % " ".join(self._cmdline))
-            print (self._cmdline)
+            #print ("command line: %s" % " ".join(self._cmdline))
+            #print (self._cmdline)
             self._p = subprocess.Popen(self._cmdline)
 
         self._running = True
@@ -237,10 +235,12 @@ class JuliusWrap(threading.Thread):
                 self._cmdline.extend(['-h',     self._config._julius_dict_hmm_en])
                 self._cmdline.extend(['-hlist', self._config._julius_dict_hlist_en])
                 self._cmdline.extend(['-htkconf', self._config._julius_dict_htkconf_en])
-                self._cmdline.extend(["-b", "4000", "-b2", "360", "-s", "2000" ,"-m", "8000"])
-                self._cmdline.extend(["-n", "40", "-lmp", '12' ,'-6', '-lmp2', '12', '-6'])
-                self._cmdline.extend(["-fallback1pass", "-multipath", "-iwsp", "-iwcd1", "max", "-spmodel", "sp", 
-                                      "-no_ccd",  "-sepnum", "150",  "-lookuprange", "5", "-sb", "80", "-forcedict"])
+                self._cmdline.extend(["-b", "1500", "-b2", "100", "-s", "500" ,"-m", "10000"])
+                self._cmdline.extend(["-n", "30", "-output", "5", "-zmeanframe", "-rejectshort" ,"800", "-lmp", '10' ,'0', '-lmp2', '10', '0'])
+                #self._cmdline.extend(["-b", "4000", "-b2", "360", "-s", "2000" ,"-m", "8000"])
+                #self._cmdline.extend(["-n", "40", "-lmp", '12' ,'-6', '-lmp2', '12', '-6'])
+                #self._cmdline.extend(["-fallback1pass", "-multipath", "-iwsp", "-iwcd1", "max", "-spmodel", "sp", 
+                #                      "-no_ccd",  "-sepnum", "150",  "-lookuprange", "5", "-sb", "80", "-forcedict"])
 
         else:
             #
@@ -280,22 +280,17 @@ class JuliusWrap(threading.Thread):
             self._cmdline.extend(["-rejectshort", "200"])
             self._cmdline.extend(["-penalty1", "5.0", "-penalty2", "20.0"]) # (文法使用時) 第1,2パス用の単語挿入ペナルティ
 
-        if self._mode == 'dictation' and self._lang == 'en':
-            self._cmdline.extend(["-input", "mic"]) # 入力の設定（adinport使用)
-            #pass
-        else:
-            self._cmdline.extend(["-pausesegment"])         # レベル・零交差による音声区間検出の強制ON
-            self._cmdline.extend(["-nostrip"])              # ゼロ続きの無効な入力部の除去をOFFにする
-            self._cmdline.extend(["-spmodel", "sp"])        # ショートポーズ音響モデルの名前
-            self._cmdline.extend(["-iwcd1", "max"])         # 第1パスの単語間トライフォン計算法を指定する．(同じコンテキストのトライフォン集合の全尤度の最大値を近似尤度として用いる)
-            self._cmdline.extend(["-gprune", "safe"])       # safe pruning 上位N個が確実に求まる．正確．
-            self._cmdline.extend(["-forcedict"])            # エラー単語を無視して続行する
-            self._cmdline.extend(["-record", self._logdir]) # 認識した音声データを連続したファイルに自動保存
-            self._cmdline.extend(["-smpFreq", "16000"])     # サンプリング周波数(Hz)
+        self._cmdline.extend(["-pausesegment"])         # レベル・零交差による音声区間検出の強制ON
+        self._cmdline.extend(["-nostrip"])              # ゼロ続きの無効な入力部の除去をOFFにする
+        self._cmdline.extend(["-spmodel", "sp"])        # ショートポーズ音響モデルの名前
+        self._cmdline.extend(["-iwcd1", "max"])         # 第1パスの単語間トライフォン計算法を指定する．(同じコンテキストのトライフォン集合の全尤度の最大値を近似尤度として用いる)
+        self._cmdline.extend(["-gprune", "safe"])       # safe pruning 上位N個が確実に求まる．正確．
+        self._cmdline.extend(["-forcedict"])            # エラー単語を無視して続行する
+        self._cmdline.extend(["-record", self._logdir]) # 認識した音声データを連続したファイルに自動保存
+        self._cmdline.extend(["-smpFreq", "16000"])     # サンプリング周波数(Hz)
 
-            self._audioport = self.getunusedport()
-            self._cmdline.extend(["-input", "adinnet",  "-adport",  str(self._audioport)]) # 入力の設定（adinport使用)
-
+        self._audioport = self.getunusedport()
+        self._cmdline.extend(["-input", "adinnet",  "-adport",  str(self._audioport)]) # 入力の設定（adinport使用)
 
         if self._jconf_file :
             self._cmdline.extend(["-C", self._jconf_file]) # overwrite parameters by jconf file.

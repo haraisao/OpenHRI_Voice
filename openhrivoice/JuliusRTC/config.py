@@ -38,7 +38,10 @@ class config():
             self._basedir = os.path.dirname(sys.executable)
         else:
             #self._basedir = os.path.dirname(__file__)
-            self._basedir = os.getcwd()
+            if 'OpenHRI_ROOT' in os.environ:
+                self._basedir = os.environ['OpenHRI_ROOT']
+            else:
+                self._basedir = os.getcwd()
 
         self._homedir = os.path.expanduser('~')
 
@@ -53,42 +56,15 @@ class config():
         self.julius(os.path.join(self._basedir, "3rdparty") )
 
         # config
-        print("--",self._basedir)
+        #print("--",self._basedir)
         self._configfile = configparser.ConfigParser()
         if os.path.exists(os.path.join(self._basedir, 'julius.cfg')) :
             self._configfile.read(os.path.join(self._basedir, 'julius.cfg'))
 
-        if 'julius.runkit_ja' in self._configfile :
-            self._julius_runkitdir = self._configfile['julius.runkit_ja']['base_dir'].replace('/', os.path.sep)
-            self._julius_bin = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_ja']['executable'].replace('/', os.path.sep))
-            self._julius_hmm_ja   = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_ja']['hmm'].replace('/', os.path.sep))
-            self._julius_hlist_ja = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_ja']['hlist'].replace('/', os.path.sep))
-            self._julius_ngram_ja = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_ja']['ngram'].replace('/', os.path.sep))
-            self._julius_dict_ja  = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_ja']['dict'].replace('/', os.path.sep))
-            #
-            # for dictation
-            self._julius_bingram_ja = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_ja']['bingram'].replace('/', os.path.sep))
-            self._julius_htkdic_ja = os.path.join(self._julius_runkitdir, self._configfile['julius.runkit_ja']['htkdic'].replace('/', os.path.sep))
-
-        if 'julius.voxforge' in self._configfile :
-            self._julius_voxforgedir = self._configfile['julius.voxforge']['base_dir']
-            self._julius_hmm_en = os.path.join(self._julius_voxforgedir, self._configfile['julius.voxforge']['hmm'].replace('/', os.path.sep))
-            self._julius_hlist_en = os.path.join(self._julius_voxforgedir, self._configfile['julius.voxforge']['hlist'].replace('/', os.path.sep))
-            self._julius_dict_en = os.path.join(self._julius_voxforgedir, self._configfile['julius.voxforge']['dict'].replace('/', os.path.sep))
-
-        if 'julius.voxforge_de' in self._configfile :
-            self._julius_voxforgedir_de = self._configfile['julius.voxforge_de']['base_dir']
-            self._julius_hmm_de = os.path.join(self._julius_voxforgedir_de, self._configfile['julius.voxforge_de']['hmm'].replace('/', os.path.sep))
-            self._julius_hlist_de = os.path.join(self._julius_voxforgedir_de, self._configfile['julius.voxforge_de']['hlist'].replace('/', os.path.sep))
-
-        if 'julius.runkit_en' in self._configfile :
-            self._julius_runkitdir_en = self._configfile['julius.runkit_en']['base_dir'].replace('/', os.path.sep)
-            self._julius_bin_en = os.path.join(self._julius_runkitdir_en, self._configfile['julius.runkit_en']['executable'].replace('/', os.path.sep))
-            self._julius_dict_hmm_en   = os.path.join(self._julius_runkitdir_en, self._configfile['julius.runkit_en']['hmm'].replace('/', os.path.sep))
-            self._julius_dict_hlist_en = os.path.join(self._julius_runkitdir_en, self._configfile['julius.runkit_en']['hlist'].replace('/', os.path.sep))
-            self._julius_dict_ngram_en = os.path.join(self._julius_runkitdir_en, self._configfile['julius.runkit_en']['ngram'].replace('/', os.path.sep))
-            self._julius_dict_dict_en  = os.path.join(self._julius_runkitdir_en, self._configfile['julius.runkit_en']['dict'].replace('/', os.path.sep))
-            self._julius_dict_htkconf_en  = os.path.join(self._julius_runkitdir_en, self._configfile['julius.runkit_en']['htkconf'].replace('/', os.path.sep))
+        self.set_runkit_ja(self._configfile)
+        self.set_runkit_en(self._configfile)
+        self.set_voxforge_en(self._configfile)
+        self.set_voxforge_de(self._configfile)
 
     #
     #  For Julius
@@ -133,3 +109,58 @@ class config():
         # for dictation
         self._julius_bingram_ja= os.path.join(self._julius_runkitdir, "model", "lang_m", "bccwj.60k.bingram")
         self._julius_htkdic_ja = os.path.join(self._julius_runkitdir, "model", "lang_m", "bccwj.60k.htkdic")
+
+    def set_runkit_ja(self, configfile):
+        if 'julius.runkit_ja' in configfile :
+            try:
+                self._julius_runkitdir = configfile['julius.runkit_ja']['base_dir'].replace('/', os.path.sep)
+                self._julius_bin = os.path.join(self._julius_runkitdir, configfile['julius.runkit_ja']['executable'].replace('/', os.path.sep))
+                self._julius_hmm_ja   = os.path.join(self._julius_runkitdir, configfile['julius.runkit_ja']['hmm'].replace('/', os.path.sep))
+                self._julius_hlist_ja = os.path.join(self._julius_runkitdir, configfile['julius.runkit_ja']['hlist'].replace('/', os.path.sep))
+                self._julius_ngram_ja = os.path.join(self._julius_runkitdir, configfile['julius.runkit_ja']['ngram'].replace('/', os.path.sep))
+                self._julius_dict_ja  = os.path.join(self._julius_runkitdir, configfile['julius.runkit_ja']['dict'].replace('/', os.path.sep))
+                #
+                # for dictation
+                self._julius_bingram_ja = os.path.join(self._julius_runkitdir, configfile['julius.runkit_ja']['bingram'].replace('/', os.path.sep))
+                self._julius_htkdic_ja = os.path.join(self._julius_runkitdir, configfile['julius.runkit_ja']['htkdic'].replace('/', os.path.sep))
+            except:
+                print("=== Error in set_runkit_ja")
+
+    def set_voxforge_en(self, configfile):
+        if 'julius.voxforge' in configfile :
+            try:
+                self._julius_voxforgedir = configfile['julius.voxforge']['base_dir']
+                self._julius_hmm_en = os.path.join(self._julius_voxforgedir, configfile['julius.voxforge']['hmm'].replace('/', os.path.sep))
+                self._julius_hlist_en = os.path.join(self._julius_voxforgedir, configfile['julius.voxforge']['hlist'].replace('/', os.path.sep))
+                self._julius_dict_en = os.path.join(self._julius_voxforgedir, configfile['julius.voxforge']['dict'].replace('/', os.path.sep))
+            except:
+                print("=== Error in set_voxforge_en")
+
+    def set_voxforge_de(self, configfile):
+        if 'julius.voxforge_de' in configfile :
+            try:
+                self._julius_voxforgedir_de = configfile['julius.voxforge_de']['base_dir']
+                self._julius_hmm_de = os.path.join(self._julius_voxforgedir_de, configfile['julius.voxforge_de']['hmm'].replace('/', os.path.sep))
+                self._julius_hlist_de = os.path.join(self._julius_voxforgedir_de, configfile['julius.voxforge_de']['hlist'].replace('/', os.path.sep))
+            except:
+                print("=== Error in set_voxforge_de")
+
+    def set_runkit_en(self, configfile):
+        if 'julius.runkit_en' in configfile :
+            try:
+                self._julius_runkitdir_en = configfile['julius.runkit_en']['base_dir'].replace('/', os.path.sep)
+                print("-- 1")
+                self._julius_bin_en = os.path.join(self._julius_runkitdir_en, configfile['julius.runkit_en']['executable'].replace('/', os.path.sep))
+                print("-- 2")
+                self._julius_dict_hmm_en   = os.path.join(self._julius_runkitdir_en, configfile['julius.runkit_en']['hmm'].replace('/', os.path.sep))
+                print("-- 3")
+                self._julius_dict_hlist_en = os.path.join(self._julius_runkitdir_en, configfile['julius.runkit_en']['hlist'].replace('/', os.path.sep))
+                print("-- 4")
+                self._julius_dict_ngram_en = os.path.join(self._julius_runkitdir_en, configfile['julius.runkit_en']['ngram'].replace('/', os.path.sep))
+                print("-- 5")
+                self._julius_dict_dict_en  = os.path.join(self._julius_runkitdir_en, configfile['julius.runkit_en']['dict'].replace('/', os.path.sep))
+                print("-- 6")
+                self._julius_dict_htkconf_en  = os.path.join(self._julius_runkitdir_en, configfile['julius.runkit_en']['htkconf'].replace('/', os.path.sep))
+                print("-- 7")
+            except:
+                print("=== Error in set_runkit_en")
