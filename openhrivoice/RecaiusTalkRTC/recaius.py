@@ -6,7 +6,7 @@ import time,wave
 import math
 import json
 import urllib
-import urllib.request, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import cookielib
 
 import base64
@@ -32,7 +32,7 @@ class RecaiusAuth():
 
      request = urllib.request.Request(url, data=json.dumps(data), headers=headers)
      try:
-       result = urllib.urlopen(request)
+       result = urllib.request.urlopen(request)
      except urllib.error.HTTPError as e:
        print ('Error code:', e.code)
        return False
@@ -55,7 +55,7 @@ class RecaiusAuth():
      request = urllib.request.Request(url, data=json.dumps(data), headers=headers)
      request.get_method = lambda : 'PUT'
      try:
-       result = urllib.urlopen(request)
+       result = urllib.request.urlopen(request)
      except urllib.error.HTTPError as e:
        print ('Error code:', e.code)
        return -1
@@ -71,12 +71,12 @@ class RecaiusAuth():
   #
   def checkAuthToken(self):
      query_string = {'service_name' : 'speech_recog_jaJP'}
-     url = '{0}?{1}'.format(self._baseAuthUrl+'tokens', urllib.urlencode(query_string))
+     url = '{0}?{1}'.format(self._baseAuthUrl+'tokens', urllib.parse.urlencode(query_string))
      headers = {'Content-Type' : 'application/json', 'X-Token' : self._token }
 
      request = urllib.request.Request(url, headers=headers)
      try:
-       result = urllib.urlopen(request)
+       result = urllib.request.urlopen(request)
      except urllib.error.HTTPError as e:
        print ('Error code:', e.code)
        return -1
@@ -135,7 +135,7 @@ class RecaiusAsr():
 
      request = urllib.request.Request(url, data=json.dumps(data), headers=headers)
      try:
-       result = urllib.urlopen(request)
+       result = urllib.request.urlopen(request)
      except urllib.error.HTTPError as e:
        print ('Error code:', e.code)
        print ('Reason:', e.reason)
@@ -158,7 +158,7 @@ class RecaiusAsr():
      request = urllib.request.Request(url, headers=headers)
      request.get_method = lambda : 'DELETE'
      try:
-       result = urllib.urlopen(request)
+       result = urllib.request.urlopen(request)
      except urllib.error.HTTPError as e:
        print ('Error code:', e.cod(e))
        print ('Reason:', e.reason)
@@ -211,7 +211,7 @@ class RecaiusAsr():
      request.get_method = lambda : 'PUT'
 
      try:
-       result = urllib.urlopen(request)
+       result = urllib.request.urlopen(request)
      except urllib.error.HTTPError as e:
        print( 'Error code:', e.code)
        print ('Reason:', e.reason)
@@ -236,7 +236,7 @@ class RecaiusAsr():
      request.get_method = lambda : 'PUT'
 
      try:
-       result = urllib.urlopen(request)
+       result = urllib.request.urlopen(request)
      except urllib.error.HTTPError as e:
        print ('Error code:', e.code)
        print ('Reason:', e.reason)
@@ -327,7 +327,7 @@ class RecaiusTts():
      request.get_method = lambda : 'POST'
 
      try:
-       result = urllib.urlopen(request)
+       result = urllib.request.urlopen(request)
      except urllib.error.HTTPError as e:
        print ('Error code:', e.code)
        print ('Reason:', e.reason)

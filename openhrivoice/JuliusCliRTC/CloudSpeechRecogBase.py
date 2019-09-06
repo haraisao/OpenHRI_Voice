@@ -32,8 +32,8 @@ class CloudSpeechRecogBase(threading.Thread):
         self._platform = platform.system()
         self._callbacks = []
 
-        self._buffer = []
-        self._audio = []
+        self._buffer = b''
+        self._audio = b''
         self.audio_segments = []
 
         self._sample_width=2
@@ -58,19 +58,20 @@ class CloudSpeechRecogBase(threading.Thread):
     #
     def write(self, data):
         try:
-            self._buffer.extend(data)
+            self._buffer=b''.join([self._buffer, data])
+
             if len(self._buffer) > self._min_buflen:
                 audio=AudioSegment(self._buffer, sample_width=self._sample_width, channels=self._channels, frame_rate=self._frame_rate)
                 chunks=detect_nonsilent(audio, min_silence_len=self._min_silence, silence_thresh=self._silence_thr)
 
                 if chunks :
                     if not self._audio :
-                        self._audio.extend(self._prebuf)
-                    self._audio.extend(self._buffer)
+                        self._audio = b''.join([self._audio, self._prebuf])
+                    self._audio = b''.join([self._audio, self._buffer])
                 else:
                     self._prebuf = self._buffer
                     if self._audio :
-                        self._audio.extend(self._buffer)
+                        self._audio = b''.join([self._audio, self._buffer])
                         self._lock.acquire()
                         self.audio_segments.append(self._audio)
                         self._lock.release()
@@ -78,11 +79,16 @@ class CloudSpeechRecogBase(threading.Thread):
                         if self._logger :
                             self.save_to_wav(self.get_logfile_name(), self._audio)
 
-                        self._audio=[]
-                self._buffer = []
+                        self._audio=b''
+                    else:
+                        pass
+                self._buffer = b''
+            else:
+                pass
 
         except:
             print (traceback.format_exc())
+            pass
 
         return 0
 

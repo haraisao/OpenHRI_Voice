@@ -7,7 +7,7 @@ import optparse
 
 import json
 import urllib
-import urllib.request, urllib.error
+import urllib.request, urllib.error, urllib.parse
 
 import glob
 
@@ -38,14 +38,14 @@ class JuliusCli():
     #
     def request_asr(self, data):
         query_string = {'output': 'json', 'lang': self._lang, 'key': self._apikey}
-        url = '{0}?{1}'.format(self._endpoint, urllib.urlencode(query_string)) 
+        url = '{0}?{1}'.format(self._endpoint, urllib.parse.urlencode(query_string)) 
 
         headers = {'Content-Type': 'audio/l16; rate=16000'}
-        voice_data = str(bytearray(data))
+        voice_data = bytearray(data)
 
         try:
             request = urllib.request.Request(url, data=voice_data, headers=headers)
-            result = urllib.urlopen(request)
+            result = urllib.request.urlopen(request)
             response = result.read()
             return response.decode('utf-8').split()
         except:

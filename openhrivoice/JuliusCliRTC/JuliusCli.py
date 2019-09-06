@@ -158,12 +158,12 @@ class JuliusCliRTC(OpenRTM_aist.DataFlowComponentBase):
         self._logger.RTC_INFO("Copyright (C) 2017 Isao Hara")
         #
         #
-	self.bindParameter("lang", self._lang, "jp")
-	self.bindParameter("julius_host", self._julius_host, "localhost")
-	self.bindParameter("julius_port", self._julius_port, "1000")
-	self.bindParameter("min_silence", self._min_silence, "200")
-	self.bindParameter("silence_thr", self._silence_thr, "-20")
-	self.bindParameter("min_buflen", self._min_buflen, "8000")
+        self.bindParameter("lang", self._lang, "jp")
+        self.bindParameter("julius_host", self._julius_host, "localhost")
+        self.bindParameter("julius_port", self._julius_port, "1000")
+        self.bindParameter("min_silence", self._min_silence, "200")
+        self.bindParameter("silence_thr", self._silence_thr, "-20")
+        self.bindParameter("min_buflen", self._min_buflen, "8000")
         #
         # create inport for audio stream
         self._indata = RTC.TimedOctetSeq(RTC.Time(0,0), None)
