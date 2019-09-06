@@ -13,9 +13,8 @@ Licensed under the Eclipse Public License -v 1.0 (EPL)
 http://www.opensource.org/licenses/eclipse-1.0.txt
 '''
 
-import sys, os, socket, subprocess, signal, threading, platform
-import time, struct, traceback, getopt, wave, tempfile
-import optparse
+import sys, os, signal, platform
+import time, struct, optparse
 
 import json, base64
 import urllib
@@ -24,21 +23,20 @@ import urllib.request, urllib.error, urllib.parse
 from pydub import AudioSegment
 from pydub.silence import *
 
-from xml.dom.minidom import Document
-
 import OpenRTM_aist
 import RTC
 from __init__ import __version__
 import utils
 
-
 __doc__ = 'Google Text-to-Speech component.'
+
+_EffectsProfile=('wearable', 'handset', 'headphone', 'small-bluetooth-speaker', 'medium-bluetooth-speaker',
+                  'large-home-entertainment', 'large-automotive', 'telephony')
 
 #
 #  
 #
 class GoogleTextToSpeechWrap(object):
-    
     #
     #  Constructor
     #
@@ -47,17 +45,43 @@ class GoogleTextToSpeechWrap(object):
         self._lang = "ja-JP"
         self._speekingRate=1.0
         self._apikey = ""
+        self._ssmlGender='NEUTRAL'
+        self._voiceName='ja-JP-Standard-A'
+        self._pitch=1.0
+        self._volumeGain=0
+        self._sampleRate=16000
+        self._effectsProfileId=None
 
         prop = rtc._properties
-        if prop.getProperty("google.speech.apikey") :
+        if prop.getProperty("google.tts.apikey") :
+            self._apikey=prop.getProperty("google.tts.apikey")
+
+        if (not self._apikey) and prop.getProperty("google.speech.apikey") :
             self._apikey=prop.getProperty("google.speech.apikey")
 
         if prop.getProperty("google.tts.lang") :
             self._lang=prop.getProperty("google.tts.lang")
 
-        if prop.getProperty("google.tts.logdir") :
-            self._logdir=prop.getProperty("google.tts.logdir")
+        if prop.getProperty("google.tts.speekingRate") :
+            self._speekingRate=prop.getProperty("google.tts.speekingRate")
 
+        if prop.getProperty("google.tts.ssmlGender") :
+            self._ssmlGender=prop.getProperty("google.tts.ssmlGender")
+
+        if prop.getProperty("google.tts.voiceName") :
+            self._voiceName=prop.getProperty("google.tts.voiceName")
+
+        if prop.getProperty("google.tts.pitch") :
+            self._pitch=prop.getProperty("google.tts.pitch")
+
+        if prop.getProperty("google.tts.volumeGain") :
+            self._volumeGain=prop.getProperty("google.tts.volumeGain")
+
+        if prop.getProperty("google.tts.sampleRate") :
+            self._sampleRate=prop.getProperty("google.tts.sampleRate")
+
+        if prop.getProperty("google.tts.effectsProfileId") :
+            self._effectsProfileId=prop.getProperty("google.tts.effectsProfileId")
     #
     #  Set ApiKey
     #
@@ -71,19 +95,24 @@ class GoogleTextToSpeechWrap(object):
         headers = {  'Content-Type' : 'application/json; charset=utf-8' }
 
         data = { "input": { "text" : text }, 
-                 "voice" : {  'languageCode' : self._lang  # en-US, ja-JP, fr-FR
-                             , 'name':'ja-JP-Standard-A'
-                             , 'ssmlGender':'NEUTRAL' # MALE, FEMALE, NEUTRAL
-                         },
-                 'audioConfig':{ 
-                   'audioEncoding':'LINEAR16'  # LINEAR16, MP3, OGG_OPUS
-                   , 'speakingRate' : self._speekingRate # [0.25: 4.0]
-                   #, 'pitch' : 0.0  [ -20.0: 20.0]
-                   #, volumeGainDb : 0.0 
-                   , 'sampleRateHertz' : 16000  # default is 22050
-                   #,  'effectsProfileId' : "wearable-class-device" # handset-class-device, headphone-class-device,	small-bluetooth-speaker-class-device, medium-bluetooth-speaker-class-device,large-home-entertainment-class-device, large-automotive-class-device, telephony-class-applicatio
+                 "voice" : {  'languageCode' : self._lang      # en-US, ja-JP, fr-FR
+                             , 'name' : self._voiceName
+                             , 'ssmlGender' : self._ssmlGender # MALE, FEMALE, NEUTRAL
+                          },
+                 'audioConfig': { 
+                   'audioEncoding':'LINEAR16'              # LINEAR16, MP3, OGG_OPUS
+                   , 'speakingRate' : self._speekingRate   # [0.25: 4.0]
+                   , 'pitch' : self._pitch                 # [ -20.0: 20.0]
+                   , 'volumeGainDb' : self._volumeGain 
+                   , 'sampleRateHertz' : self._sampleRate  # default is 22050
                  }
           }
+
+        if self._effectsProfileId in _EffectsProfile:
+            if self._effectsProfileId == 'telephony':
+                data['audioConfig']['effectsProfileId'] = 'telephony-class-application'
+            else:
+                data['audioConfig']['effectsProfileId'] = self._effectsProfileId + "-class-device"
 
         request = urllib.request.Request(url, data=json.dumps(data).encode(), headers=headers)
 
@@ -245,7 +274,6 @@ class GoogleTextToSpeechRTC(OpenRTM_aist.DataFlowComponentBase):
     def onExecute(self, ec_id):
         OpenRTM_aist.DataFlowComponentBase.onExecute(self, ec_id)
         return RTC.RTC_OK
-
 
 #
 #  Manager Class

@@ -13,9 +13,8 @@ Licensed under the Eclipse Public License -v 1.0 (EPL)
 http://www.opensource.org/licenses/eclipse-1.0.txt
 '''
 
-import sys, os, socket, subprocess, signal, threading, platform
-import time, struct, traceback, getopt, wave, tempfile
-import optparse
+import sys, os, signal, platform
+import time, struct, traceback, tempfile, optparse
 
 import json
 import urllib
