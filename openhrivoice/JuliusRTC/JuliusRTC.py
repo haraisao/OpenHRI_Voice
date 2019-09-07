@@ -167,16 +167,13 @@ class JuliusWrap(threading.Thread):
 
         ###########################################################
         if self._mode != "client" :
-            self.setupSubprocess()
+            if self.setupSubprocess():
+                #print ("command line: %s" % " ".join(self._cmdline))
+                #print (self._cmdline)
+                self._p = subprocess.Popen(self._cmdline)
+                self._running = True
 
-            #print ("command line: %s" % " ".join(self._cmdline))
-            #print (self._cmdline)
-            self._p = subprocess.Popen(self._cmdline)
-
-        self._running = True
         #####################################################
-
-
         #
         #   Connect to Julius (try ten times)
         time.sleep(1)
@@ -228,7 +225,7 @@ class JuliusWrap(threading.Thread):
                 self._cmdline.extend(['-hlist', self._config._julius_hlist_ja])
                 self._cmdline.extend(["-b", "1500", "-b2", "100", "-s", "500" ,"-m", "10000"])
                 self._cmdline.extend(["-n", "30", "-output", "5", "-zmeanframe", "-rejectshort" ,"800", "-lmp", '10' ,'0', '-lmp2', '10', '0'])
-            else:
+            elif self._config._julius_bin_en:
                 self._cmdline = [self._config._julius_bin_en]
                 self._cmdline.extend(['-d',     self._config._julius_dict_ngram_en])
                 self._cmdline.extend(['-v',     self._config._julius_dict_dict_en])
@@ -237,10 +234,10 @@ class JuliusWrap(threading.Thread):
                 self._cmdline.extend(['-htkconf', self._config._julius_dict_htkconf_en])
                 self._cmdline.extend(["-b", "1500", "-b2", "100", "-s", "500" ,"-m", "10000"])
                 self._cmdline.extend(["-n", "30", "-output", "5", "-zmeanframe", "-rejectshort" ,"800", "-lmp", '10' ,'0', '-lmp2', '10', '0'])
-                #self._cmdline.extend(["-b", "4000", "-b2", "360", "-s", "2000" ,"-m", "8000"])
-                #self._cmdline.extend(["-n", "40", "-lmp", '12' ,'-6', '-lmp2', '12', '-6'])
-                #self._cmdline.extend(["-fallback1pass", "-multipath", "-iwsp", "-iwcd1", "max", "-spmodel", "sp", 
-                #                      "-no_ccd",  "-sepnum", "150",  "-lookuprange", "5", "-sb", "80", "-forcedict"])
+            else:
+                print("Invalid setrings")
+                return False
+
 
         else:
             #
@@ -298,6 +295,7 @@ class JuliusWrap(threading.Thread):
         self._moduleport = self.getunusedport()
         self._cmdline.extend(["-module", str(self._moduleport)])                       # module mode
 
+        return True
 
     #
     #  Connect to Julius
@@ -641,6 +639,9 @@ class JuliusRTC(OpenRTM_aist.DataFlowComponentBase):
             self._lang = self._srgs._lang
 
         self._j = JuliusWrap(self._lang, self)
+        if not self._j._running :
+            return RTC.RTC_ERROR
+
         self._j.start()
         self._j.setcallback(self.onResult)
 

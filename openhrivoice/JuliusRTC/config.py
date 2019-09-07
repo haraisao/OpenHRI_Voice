@@ -72,17 +72,15 @@ class config():
     def julius(self, basedir):
         if self._platform == "Windows":
             self._julius_runkitdir = os.path.join(basedir, "dictation-kit")
-            self._julius_voxforgedir = os.path.join(basedir, "Voxforge_AcousticModels")
-            self._julius_voxforgedir_de = os.path.join(basedir, "voxforge_de_simon")
-
             self._julius_bin = os.path.join(self._julius_runkitdir, "bin", "windows", "julius.exe")
-
+            
+            self._julius_voxforgedir = os.path.join(basedir, "voxforge_en")
             self._julius_hmm_en = os.path.join(self._julius_voxforgedir, "hmmdefs")
             self._julius_hlist_en = os.path.join(self._julius_voxforgedir, "tiedlist")
-            self._julius_dict_en = os.path.join(self._julius_voxforgedir, "dict")
 
-            self._julius_hmm_en = os.path.join(self._julius_voxforgedir_de, "hmmdefs")
-            self._julius_hlist_en = os.path.join(self._julius_voxforgedir_de, "tiedlist")
+            self._julius_voxforgedir_de = os.path.join(basedir, "voxforge_de")
+            self._julius_hmm_de = os.path.join(self._julius_voxforgedir_de, "hmmdefs")
+            self._julius_hlist_de = os.path.join(self._julius_voxforgedir_de, "tiedlist")
 
         else:
             self._julius_runkitdir = "/usr/share/julius-runkit"
@@ -132,7 +130,6 @@ class config():
                 self._julius_voxforgedir = configfile['julius.voxforge']['base_dir']
                 self._julius_hmm_en = os.path.join(self._julius_voxforgedir, configfile['julius.voxforge']['hmm'].replace('/', os.path.sep))
                 self._julius_hlist_en = os.path.join(self._julius_voxforgedir, configfile['julius.voxforge']['hlist'].replace('/', os.path.sep))
-                self._julius_dict_en = os.path.join(self._julius_voxforgedir, configfile['julius.voxforge']['dict'].replace('/', os.path.sep))
             except:
                 print("=== Error in set_voxforge_en")
 
