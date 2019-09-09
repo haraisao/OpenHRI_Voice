@@ -37,11 +37,14 @@ class config():
         if hasattr(sys, "frozen"):
             self._basedir = os.path.dirname(sys.executable)
         else:
-            #self._basedir = os.path.dirname(__file__)
-            if 'OpenHRI_ROOT' in os.environ:
-                self._basedir = os.environ['OpenHRI_ROOT']
-            else:
-                self._basedir = os.getcwd()
+            basedir = os.path.dirname(os.path.abspath(__file__))
+            dir = basedir.split(os.path.sep)
+            dir.pop()
+            self._basedir = os.path.sep.join(dir)
+            #if 'OpenHRI_ROOT' in os.environ:
+            #    self._basedir = os.environ['OpenHRI_ROOT']
+            #else:
+            #    self._basedir = os.getcwd()
 
         self._homedir = os.path.expanduser('~')
 

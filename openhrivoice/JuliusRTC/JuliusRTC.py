@@ -212,7 +212,6 @@ class JuliusWrap(threading.Thread):
     # Parameter seting for Julius
     #
     def setupSubprocess(self):
-
         self._cmdline = []
         self._cmdline.append(self._config._julius_bin)
 
