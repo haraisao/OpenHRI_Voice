@@ -37,14 +37,10 @@ class config():
         if hasattr(sys, "frozen"):
             self._basedir = os.path.dirname(sys.executable)
         else:
-            basedir = os.path.dirname(os.path.abspath(__file__))
-            dir = basedir.split(os.path.sep)
-            dir.pop()
-            self._basedir = os.path.sep.join(dir)
-            #if 'OpenHRI_ROOT' in os.environ:
-            #    self._basedir = os.environ['OpenHRI_ROOT']
-            #else:
-            #    self._basedir = os.getcwd()
+            if 'OpenHRI_ROOT' in os.environ:
+                self._basedir = os.environ['OpenHRI_ROOT']
+            else:
+                self._basedir = os.path.abspath(os.path.dirname(os.path.abspath(__file__))+"\\..")
 
         self._homedir = os.path.expanduser('~')
 
@@ -59,7 +55,6 @@ class config():
         self.julius(os.path.join(self._basedir, "3rdparty") )
 
         # config
-        #print("--",self._basedir)
         self._configfile = configparser.ConfigParser()
         if os.path.exists(os.path.join(self._basedir, 'julius.cfg')) :
             self._configfile.read(os.path.join(self._basedir, 'julius.cfg'))
