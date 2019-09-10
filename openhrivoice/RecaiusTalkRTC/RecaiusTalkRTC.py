@@ -121,6 +121,15 @@ class RecaiusTalkRTCManager:
         except optparse.OptionError as e:
             print ('OptionError:', e, file=sys.stderr)
             sys.exit(1)
+
+        if opts.configfile is not None:
+            try:
+                cfgname = os.environ['OPENHRI_ROOT'] + "/rtc.conf"
+                if os.path.exists(cfgname):
+                    opt.configfile = cfgname
+            except:
+                pass
+
         self._comp = None
         self._manager = OpenRTM_aist.Manager.init(utils.genmanagerargs(opts))
         self._manager.setModuleInitProc(self.moduleInit)

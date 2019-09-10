@@ -799,7 +799,6 @@ class JuliusRTCManager:
         try:
             opts, args = parser.parse_args()
         except optparse.OptionError as e:
-            #print >>sys.stderr, 'OptionError:', e
             print('OptionError:', e , file=sys.stderr)
             sys.exit(1)
 
@@ -815,6 +814,13 @@ class JuliusRTCManager:
         if opts.dictation_mode == True:
           args.extend(['dictation'])
 
+        if opts.configfile is None:
+            try:
+                cfgname = os.environ['OPENHRI_ROOT'] + "/rtc.conf"
+                if os.path.exists(cfgname):
+                    opt.configfile = cfgname
+            except:
+                pass
 
         self._rebuid_lexicon=opts.rebuild_lexicon
 

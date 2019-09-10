@@ -5,13 +5,15 @@
 @set PYTHONPATH=%PYTHON_BASE%\Lib\site-packages;%PYTHON_BASE%\Lib\site-packages\rtctree\rtmidl\;%~dp0..
 
 
-@set MODULE=%1 
-%PYTHON_BASE%\python -m zipapp %MODULE% -m "%MODULE: =%:main"
+@set MODULE=%1
+%PYTHON_BASE%\python -m zipapp %MODULE% -m "%MODULE%:main"
 
-@set EXEC_FILE=%MODULE: =%.exe
+@set EXEC_FILE=%MODULE%.exe
 
 @if not exist %EXEC_FILE% @(
     copy cli64.exe  %EXEC_FILE%
 )
 
+move %MODULE%.pyz ..\dist\bin
+move %EXEC_FILE% ..\dist\bin
 @endlocal

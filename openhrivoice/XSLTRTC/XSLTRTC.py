@@ -114,6 +114,14 @@ class XSLTRTCManager:
             parser.error("wrong number of arguments")
             sys.exit(1)
 
+        if opts.configfile is None:
+            try:
+                cfgname = os.environ['OPENHRI_ROOT'] + "/rtc.conf"
+                if os.path.exists(cfgname):
+                    opt.configfile = cfgname
+            except:
+                pass
+
         self._files = args
         self._comp = {}
         self._manager = OpenRTM_aist.Manager.init(utils.genmanagerargs(opts))
