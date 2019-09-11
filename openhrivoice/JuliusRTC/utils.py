@@ -133,4 +133,5 @@ def genmanagerargs(opt):
         args.append(port)
     if opt.mastermode == True:
         args.append('-d')
+    return args
 

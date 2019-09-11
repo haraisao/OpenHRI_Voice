@@ -56,8 +56,8 @@ class config():
 
         # config
         self._configfile = configparser.ConfigParser()
-        if os.path.exists(os.path.join(self._basedir, 'julius.cfg')) :
-            self._configfile.read(os.path.join(self._basedir, 'julius.cfg'))
+        if os.path.exists(os.path.join(self._basedir, 'etc', 'julius.cfg')) :
+            self._configfile.read(os.path.join(self._basedir, 'etc', 'julius.cfg'))
 
         self.set_runkit_ja(self._configfile)
         self.set_runkit_en(self._configfile)

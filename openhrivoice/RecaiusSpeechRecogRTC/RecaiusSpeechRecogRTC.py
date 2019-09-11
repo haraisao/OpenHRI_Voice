@@ -293,10 +293,6 @@ class RecaiusSpeechRecogManager:
     #  Constructor
     #
     def __init__(self):
-        encoding = locale.getpreferredencoding()
-        sys.stdout = codecs.getwriter(encoding)(sys.stdout, errors = "replace")
-        sys.stderr = codecs.getwriter(encoding)(sys.stderr, errors = "replace")
-
         parser = utils.MyParser(version=__version__, description=__doc__)
         utils.addmanageropts(parser)
 
@@ -308,9 +304,9 @@ class RecaiusSpeechRecogManager:
 
         if opts.configfile is None:
             try:
-                cfgname = os.environ['OPENHRI_ROOT'] + "/rtc.conf"
+                cfgname = os.environ['OPENHRI_ROOT'] + "/etc/rtc.conf".replace('/', os.path.sep)
                 if os.path.exists(cfgname):
-                    opt.configfile = cfgname
+                    opts.configfile = cfgname
             except:
                 pass
 

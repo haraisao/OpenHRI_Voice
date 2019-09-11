@@ -172,9 +172,9 @@ class FestivalRTCManager:
 
         if opts.configfile is None:
             try:
-                cfgname = os.environ['OPENHRI_ROOT'] + "/rtc.conf"
+                cfgname = os.environ['OPENHRI_ROOT'] + "/etc/rtc.conf".replace('/', os.path.sep)
                 if os.path.exists(cfgname):
-                    opt.configfile = cfgname
+                    opts.configfile = cfgname
             except:
                 pass
 

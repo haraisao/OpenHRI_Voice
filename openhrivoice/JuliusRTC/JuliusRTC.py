@@ -244,24 +244,24 @@ class JuliusWrap(threading.Thread):
             if self._lang in ('ja', 'jp'):
                 self._cmdline.extend(['-h',  self._config._julius_hmm_ja])
                 self._cmdline.extend(['-hlist', self._config._julius_hlist_ja])
-                self._cmdline.extend(["-dfa", os.path.join(self._config._basedir, "dummy.dfa")])
-                self._cmdline.extend(["-v" , os.path.join(self._config._basedir,  "dummy.dict")])
+                self._cmdline.extend(["-dfa", os.path.join(self._config._basedir, "etc", "dummy.dfa")])
+                self._cmdline.extend(["-v" , os.path.join(self._config._basedir, "etc", "dummy.dict")])
                 self._cmdline.extend(["-sb", "80.0"])
             #
             #  Germany
             elif self._lang == 'de':
                 self._cmdline.extend(['-h',  self._config._julius_hmm_de])
                 self._cmdline.extend(['-hlist', self._config._julius_hlist_de])
-                self._cmdline.extend(["-dfa", os.path.join(self._config._basedir,  "dummy-en.dfa")])
-                self._cmdline.extend(["-v", os.path.join(self._config._basedir, "dummy-en.dict")])
+                self._cmdline.extend(["-dfa", os.path.join(self._config._basedir, "etc", "dummy-en.dfa")])
+                self._cmdline.extend(["-v", os.path.join(self._config._basedir, "etc", "dummy-en.dict")])
                 self._cmdline.extend(["-sb", "160.0"])
             #
             #  English
             else:
                 self._cmdline.extend(['-h',  self._config._julius_hmm_en])
                 self._cmdline.extend(['-hlist', self._config._julius_hlist_en])
-                self._cmdline.extend(["-dfa", os.path.join(self._config._basedir, "dummy-en.dfa")])
-                self._cmdline.extend(["-v", os.path.join(self._config._basedir,  "dummy-en.dict")])
+                self._cmdline.extend(["-dfa", os.path.join(self._config._basedir, "etc", "dummy-en.dfa")])
+                self._cmdline.extend(["-v", os.path.join(self._config._basedir, "etc", "dummy-en.dict")])
                 self._cmdline.extend(["-sb", "160.0"])
     
             #
@@ -816,9 +816,9 @@ class JuliusRTCManager:
 
         if opts.configfile is None:
             try:
-                cfgname = os.environ['OPENHRI_ROOT'] + "/rtc.conf"
+                cfgname = os.environ['OPENHRI_ROOT'] + "/etc/rtc.conf".replace('/', os.path.sep)
                 if os.path.exists(cfgname):
-                    opt.configfile = cfgname
+                    opts.configfile = cfgname
             except:
                 pass
 
