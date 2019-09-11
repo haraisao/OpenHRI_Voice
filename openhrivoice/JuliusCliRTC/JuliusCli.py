@@ -300,7 +300,7 @@ class JuliusCliManager:
 
         if opts.configfile is None:
             try:
-                cfgname = os.environ['OPENHRI_ROOT'] + "/etc/rtc.conf".replace('/', os.path.sep)
+                cfgname = os.environ['OPENHRI_ROOT'] + "/etc/julius.conf".replace('/', os.path.sep)
                 if os.path.exists(cfgname):
                     opts.configfile = cfgname
             except:

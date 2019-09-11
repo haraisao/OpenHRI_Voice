@@ -116,7 +116,7 @@ class XSLTRTCManager:
 
         if opts.configfile is None:
             try:
-                cfgname = os.environ['OPENHRI_ROOT'] + "/etc/rtc.conf".replace('/', os.path.sep)
+                cfgname = os.environ['OPENHRI_ROOT'] + "/etc/xslt.conf".replace('/', os.path.sep)
                 if os.path.exists(cfgname):
                     sopt.configfile = cfgname
             except:
