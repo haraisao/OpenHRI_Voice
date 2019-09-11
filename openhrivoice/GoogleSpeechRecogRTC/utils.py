@@ -134,3 +134,4 @@ def genmanagerargs(opt):
     if opt.mastermode == True:
         args.append('-d')
 
+    return args

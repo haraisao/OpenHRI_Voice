@@ -366,7 +366,8 @@ class OpenJTalkRTC(VoiceSynthComponentBase):
         self.bindParameter("volume", self._volume, "0.0")
 
 
-        self._wrap = OpenJTalkWrap(self._properties)
+        #self._wrap = OpenJTalkWrap(self._properties)
+        self._wrap = OpenJTalkWrap(self._manager._config)
         self._logger.RTC_INFO("This component depends on following softwares and datas:")
         self._logger.RTC_INFO('')
         for c in self._wrap._copyrights:
