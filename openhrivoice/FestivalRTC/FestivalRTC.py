@@ -56,11 +56,10 @@ class FestivalWrap(VoiceSynthBase):
         VoiceSynthBase.__init__(self)
         self._config = config()
 
-        if prop.getProperty("festival.3rdparty_dir") :
-            self._config.festival(prop.getProperty("festival.3rdparty_dir"))
-
         if prop.getProperty("festival.top_dir") :
-            self._config.festival_top(prop.getProperty("festival.top_dir"))
+            top_dir = prop.getProperty("festival.top_dir")
+            top_dir = re.sub('^%d0', self._basedir[:2], top_dir)
+            self._config.festival_top(top_dir.replace('/', os.path.sep))
 
         self._cmdline =[self._config._festival_bin, '--pipe']
         self._cmdline.extend(self._config._festival_opt)
@@ -142,8 +141,9 @@ class FestivalRTC(VoiceSynthComponentBase):
     #  OnInitialize
     def onInitialize(self):
         VoiceSynthComponentBase.onInitialize(self)
+
         try:
-            self._wrap = FestivalWrap(self._properties)
+            self._wrap = FestivalWrap(self._manager._config)
         except:
             self._logger.RTC_ERROR(traceback.format_exc())
             return RTC.RTC_ERROR

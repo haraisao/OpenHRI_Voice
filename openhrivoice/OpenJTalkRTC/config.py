@@ -23,6 +23,7 @@ import sys
 import os
 import platform
 import traceback
+import utils
 
 import configparser
 
@@ -37,11 +38,7 @@ class config():
         if hasattr(sys, "frozen"):
             self._basedir = os.path.dirname(sys.executable)
         else:
-            #self._basedir = os.path.dirname(__file__)
-            if 'OpenHRI_ROOT' in os.environ:
-                self._basedir = os.environ['OpenHRI_ROOT']
-            else:
-                self._basedir = os.getcwd()
+            self._basedir = utils.getHriDir()
 
         self._homedir = os.path.expanduser('~')
 
@@ -49,11 +46,11 @@ class config():
         if os.path.exists(self._configdir) == False:
             os.makedirs(self._configdir)
 
-        self.openjtalk(os.path.join(self._basedir, "3rdparty") )
+        self.openjtalk(os.path.join(self._basedir, "OpenJTalk") )
 
         # config
-        self._configfile = configparser.ConfigParser()
         if os.path.exists(os.path.join(self._basedir, 'openjtalk.cfg')) :
+            self._configfile = configparser.ConfigParser()
             self._configfile.read(os.path.join(self._basedir, 'openjtalk.cfg'))
 
     #

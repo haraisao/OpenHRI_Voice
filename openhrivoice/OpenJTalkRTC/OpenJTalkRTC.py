@@ -27,6 +27,7 @@ import signal
 import traceback
 import platform
 import optparse
+import re
 import OpenRTM_aist
 import RTC
 from __init__ import __version__
@@ -104,17 +105,17 @@ class OpenJTalkWrap(VoiceSynthBase):
         self._volume = 0.0
         self._proc = None
 
-        if prop.getProperty("openjtalk.3rdparty_dir") :
-            self._conf.openjtalk(prop.getProperty("openjtalk.3rdparty_dir"))
+        self._basedir = utils.getHriDir()
 
         if prop.getProperty("openjtalk.top_dir") :
-            self._conf.openjtalk_top(prop.getProperty("openjtalk.top_dir"))
+            top_dir = prop.getProperty("openjtalk.top_dir")
+            top_dir = re.sub('^%d0', self._basedir[:2], top_dir)
+            self._conf.openjtalk_top(top_dir.replace('/', os.path.sep))
 
         if prop.getProperty("openjtalk.sox_dir") :
-            self._conf.sox_top(prop.getProperty("openjtalk.sox_dir"))
-
-        openjtalk_bin=prop.getProperty("openjtalk.bin")
-        if not openjtalk_bin : openjtalk_bin = self._conf._openjtalk_bin
+            sox_dir = prop.getProperty("openjtalk.sox_dir")
+            sox_dir = re.sub('^%d0', self._basedir[:2], sox_dir)
+            self._conf.sox_top(sox_dir.replace('/', os.path.sep))
 
         if prop.getProperty("openjtalk.phonemodel_male_ja") :
             self._conf._openjtalk_phonemodel_male_ja=prop.getProperty("openjtalk.phonemodel_male_ja")
@@ -122,7 +123,7 @@ class OpenJTalkWrap(VoiceSynthBase):
         if prop.getProperty("openjtalk.phonemodel_female_ja") :
             self._conf._openjtalk_phonemodel_female_ja=prop.getProperty("openjtalk.phonemodel_female_ja")
 
-        cmdarg = [ openjtalk_bin ]
+        cmdarg = [ self._conf.openjtalk_bin ]
         self._proc = subprocess.Popen(cmdarg, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
         try:
             stdoutstr, stderrstr = self._proc.communicate()

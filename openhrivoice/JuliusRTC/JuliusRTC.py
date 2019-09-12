@@ -157,9 +157,9 @@ class JuliusWrap(threading.Thread):
 
         if rtc :
             self._mode = rtc._mode
-            prop = rtc._properties
-            if prop.getProperty("julius.3rdparty_dir") :
-                self._config.julius(prop.getProperty("julius.3rdparty_dir"))
+            prop = rtc._manager._config
+            if prop.getProperty("julius.base_dir") :
+                self._config = config(prop.getProperty("julius.base_dir"))
 
             if os.path.isfile(rtc._jconf_file[0]) :
                 self._jconf_file = rtc._jconf_file[0]
@@ -559,7 +559,7 @@ class JuliusRTC(OpenRTM_aist.DataFlowComponentBase):
         self._logger = OpenRTM_aist.Manager.instance().getLogbuf(self._properties.getProperty("instance_name"))
         self._logger.RTC_INFO("JuliusRTC version " + __version__)
         self._logger.RTC_INFO("Copyright (C) 2010-2011 Yosuke Matsusaka")
-        self._logger.RTC_INFO("Copyright (C) 2017 Isao Hara")
+        self._logger.RTC_INFO("Copyright (C) 2017-2019 Isao Hara")
 
         #
         # create inport for audio stream
@@ -735,7 +735,7 @@ class JuliusRTC(OpenRTM_aist.DataFlowComponentBase):
                     listentext.appendChild(hypo)
                 data = doc.toxml(encoding="utf-8")
                 #self._logger.RTC_INFO(data.decode('utf-8', 'backslashreplace'))
-                self._outdata.data = data
+                self._outdata.data = data.decode('unicode_escape')
                 self._outport.write()
 
         elif type == JuliusWrap.CB_LOGWAVE:
