@@ -123,7 +123,7 @@ class OpenJTalkWrap(VoiceSynthBase):
         if prop.getProperty("openjtalk.phonemodel_female_ja") :
             self._conf._openjtalk_phonemodel_female_ja=prop.getProperty("openjtalk.phonemodel_female_ja")
 
-        cmdarg = [ self._conf.openjtalk_bin ]
+        cmdarg = [ self._conf._openjtalk_bin ]
         self._proc = subprocess.Popen(cmdarg, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
         try:
             stdoutstr, stderrstr = self._proc.communicate()
