@@ -290,6 +290,7 @@ class GoogleSpeechRecogRTC(OpenRTM_aist.DataFlowComponentBase):
                 listentext.setAttribute("state","ParseError")
 
         res_data = doc.toxml(encoding="utf-8")
+        print(res_data)
         self._outdata.data = res_data.decode('unicode_escape')
         self._outport.write()
 
