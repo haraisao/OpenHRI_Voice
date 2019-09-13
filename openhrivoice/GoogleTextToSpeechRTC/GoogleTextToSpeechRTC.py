@@ -229,8 +229,8 @@ class GoogleTextToSpeechRTC(OpenRTM_aist.DataFlowComponentBase):
     #  OnFinalize
     #
     def onFinalize(self):
-        if self._tts:
-            self._tts.terminate()
+        #if self._tts:
+        #    self._tts.terminate()
         OpenRTM_aist.DataFlowComponentBase.onFinalize(self)
         return RTC.RTC_OK
 
@@ -252,7 +252,7 @@ class GoogleTextToSpeechRTC(OpenRTM_aist.DataFlowComponentBase):
     #  OnDeactivate
     #
     def onDeactivate(self, ec_id):
-        self._recog.terminate()
+        #self._recog.terminate()
         OpenRTM_aist.DataFlowComponentBase.onDeactivate(self, ec_id)
         return RTC.RTC_OK
 
