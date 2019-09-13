@@ -1,0 +1,9 @@
+system PortAudioOutputComp
+system FestivalRTC
+system eSEAT D:/local/eSEAT/examples/SimpleIO.seatml
+sleep 10
+refresh
+connect SimpleIO.rtc:str_out FestivalRTC0:text
+connect FestivalRTC0:result PortAudioOutput0:AudioDataIn
+
+activate all

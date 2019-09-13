@@ -1,0 +1,9 @@
+system PortAudioOutputComp
+system OpenJTalkRTC
+system eSEAT D:/local/eSEAT/examples/SimpleIO.seatml
+sleep 10
+refresh
+connect SimpleIO.rtc:str_out OpenJTalkRTC0:text
+connect OpenJTalkRTC0:result PortAudioOutput0:AudioDataIn
+
+activate all

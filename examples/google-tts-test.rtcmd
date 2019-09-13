@@ -1,0 +1,9 @@
+system PortAudioOutputComp
+system GoogleTextTOSpeechRTC
+system eSEAT D:/local/eSEAT/examples/SimpleIO.seatml
+sleep 10
+refresh
+connect SimpleIO.rtc:str_out GoogleTextToSpeechRTC0:data
+connect GoogleTextToSpeechRTC0:result PortAudioOutput0:AudioDataIn
+
+activate all

@@ -23,6 +23,8 @@ import traceback
 import platform
 import wave
 import optparse
+import re
+
 import OpenRTM_aist
 import RTC
 
@@ -55,6 +57,8 @@ class FestivalWrap(VoiceSynthBase):
     def __init__(self, prop):
         VoiceSynthBase.__init__(self)
         self._config = config()
+
+        self._basedir = utils.getHriDir()
 
         if prop.getProperty("festival.top_dir") :
             top_dir = prop.getProperty("festival.top_dir")

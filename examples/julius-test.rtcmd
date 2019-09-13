@@ -1,0 +1,8 @@
+system PortAudioInputComp.exe
+system JuliusRTC.exe dictation
+system eSEAT D:/local/eSEAT/examples/SimpleIO.seatml
+sleep 10
+refresh
+connect PortAudioInput0:AudioDataOut JuliusRTC0:data
+connect JuliusRTC0.rtc:result SimpleIO.rtc:str_in
+activate all
