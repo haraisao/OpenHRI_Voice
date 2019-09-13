@@ -52,8 +52,7 @@ class GoogleSpeechRecogWrap(CloudSpeechRecogBase):
             keyfile = utils.getHriDir() + "/etc/" + prop.getProperty("google.speech.apikey")
             keyfile = keyfile.replace('/', os.path.sep)
             with open(keyfile) as f:
-                self._apikey = f.readline()
-                self._apikey.strip()
+                self._apikey = f.readline().strip()
 
         if prop.getProperty("google.speech.lang") :
             self._lang=prop.getProperty("google.speech.lang")
