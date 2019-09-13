@@ -47,9 +47,13 @@ class GoogleSpeechRecogWrap(CloudSpeechRecogBase):
 
         self._endpoint = 'http://www.google.com/speech-api/v2/recognize'
 
-        prop = rtc._properties
+        prop = rtc._manager._config
         if prop.getProperty("google.speech.apikey") :
-            self._apikey=prop.getProperty("google.speech.apikey")
+            keyfile = utils.getHriDir() + "/etc/" + prop.getProperty("google.speech.apikey")
+            keyfile = keyfile.replace('/', os.path.sep)
+            with open(keyfile) as f:
+                self._apikey = f.readline()
+                self._apikey.strip()
 
         if prop.getProperty("google.speech.lang") :
             self._lang=prop.getProperty("google.speech.lang")

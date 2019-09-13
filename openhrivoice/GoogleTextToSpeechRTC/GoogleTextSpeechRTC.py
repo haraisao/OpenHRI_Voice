@@ -52,12 +52,22 @@ class GoogleTextToSpeechWrap(object):
         self._sampleRate=16000
         self._effectsProfileId=None
 
-        prop = rtc._properties
+        prop = rtc._manager._config
         if prop.getProperty("google.tts.apikey") :
-            self._apikey=prop.getProperty("google.tts.apikey")
+            keyfile = utils.getHriDir() + "/etc/" + prop.getProperty("google.tts.apikey")
+            keyfile = keyfile.replace('/', os.path.sep)
+            with open(keyfile) as f:
+                self._apikey = f.readline()
+                self._apikey.strip()
+
 
         if (not self._apikey) and prop.getProperty("google.speech.apikey") :
-            self._apikey=prop.getProperty("google.speech.apikey")
+            keyfile = utils.getHriDir() + "/etc/" + prop.getProperty("google.speech.apikey")
+            keyfile = keyfile.replace('/', os.path.sep)
+            with open(keyfile) as f:
+                self._apikey = f.readline()
+                self._apikey.strip()
+
 
         if prop.getProperty("google.tts.lang") :
             self._lang=prop.getProperty("google.tts.lang")

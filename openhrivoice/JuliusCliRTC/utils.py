@@ -135,3 +135,14 @@ def genmanagerargs(opt):
         args.append('-d')
 
     return args
+
+
+def getHriDir():
+  if 'OPENHRI_ROOT' in os.environ and os.environ['OPENHRI_ROOT']:
+    return os.environ['OPENHRI_ROOT']
+  dirname=os.path.dirname(os.path.abspath(__file__))
+  seq=dirname.split(os.path.sep)
+  if (os.path.splitext(seq.pop())[1] == ".pyz" ):
+    return os.path.sep.join(seq)
+  else:
+    return dirname
