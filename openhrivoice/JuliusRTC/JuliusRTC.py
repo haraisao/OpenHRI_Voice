@@ -374,8 +374,9 @@ class JuliusWrap(threading.Thread):
     #
     def write(self, data):
         try:
-            self._audiosocket.send(struct.pack("i", len(data)))
-            self._audiosocket.sendall(data)
+            if len(data) > 0:
+                self._audiosocket.send(struct.pack("i", len(data)))
+                self._audiosocket.sendall(data)
         except socket.error:
             try:
                 self._audiosocket.connect((_audiohost, self._audioport))
@@ -677,7 +678,7 @@ class JuliusRTC(OpenRTM_aist.DataFlowComponentBase):
     def onData(self, name, data):
         if self._j:
             if name == "data":
-                self._j.write(data.data)
+                if len(data.data) > 0: self._j.write(data.data)
             elif name == "activegrammar":
                 self._j.switchgrammar(data.data)
 
