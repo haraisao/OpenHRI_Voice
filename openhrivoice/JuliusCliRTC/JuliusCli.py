@@ -128,6 +128,7 @@ class DataListener(OpenRTM_aist.ConnectorDataListenerT):
     def __call__(self, info, cdrdata):
         data = OpenRTM_aist.ConnectorDataListenerT.__call__(self, info, cdrdata, self._dtype(RTC.Time(0,0),None))
         self._obj.onData(self._name, data)
+        return OpenRTM_aist.ConnectorListenerStatus.NO_CHANGE, data
 
 #
 #  JuliusCliRTC Class

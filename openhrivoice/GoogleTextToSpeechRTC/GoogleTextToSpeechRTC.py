@@ -173,6 +173,7 @@ class DataListener(OpenRTM_aist.ConnectorDataListenerT):
         data = OpenRTM_aist.ConnectorDataListenerT.__call__(self, info, cdrdata, self._dtype(RTC.Time(0,0), ""))
         print(data, self._name)
         self._obj.onData(self._name, data)
+        return OpenRTM_aist.ConnectorListenerStatus.NO_CHANGE, data
 
 #
 #  GoogleTextToSpeechRTC Class
